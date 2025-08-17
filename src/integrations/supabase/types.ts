@@ -83,6 +83,14 @@ export type Database = {
         Args: { p_funcionario_id: string }
         Returns: number
       }
+      validate_dashboard_token: {
+        Args: { token_input: string }
+        Returns: {
+          user_name: string
+          user_uuid: string
+          user_whatsapp: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
