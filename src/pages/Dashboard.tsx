@@ -7,7 +7,7 @@ import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { MetricsCards } from "@/components/dashboard/MetricsCards";
 import { ExpenseChart } from "@/components/dashboard/ExpenseChart";
 import { CategoryChart } from "@/components/dashboard/CategoryChart";
-import { EstablishmentChart } from "@/components/dashboard/EstablishmentChart";
+import { TransactionsList } from "@/components/dashboard/TransactionsList";
 import { TimeFilter } from "@/components/dashboard/TimeFilter";
 import { toast } from "@/hooks/use-toast";
 
@@ -202,7 +202,7 @@ const Dashboard = () => {
           <CategoryChart transactions={filteredTransactions} />
         </div>
 
-        <EstablishmentChart transactions={filteredTransactions} />
+        <TransactionsList transactions={filteredTransactions} />
       </div>
     </div>
   );
