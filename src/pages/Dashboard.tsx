@@ -59,7 +59,7 @@ const Dashboard = () => {
           .from("users")
           .select("*")
           .eq("dashboard_token", dashboard_token)
-          .single();
+          .maybeSingle();
 
         if (userError || !userData) {
           toast({
