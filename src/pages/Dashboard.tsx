@@ -55,14 +55,11 @@ const Dashboard = () => {
 
     const fetchUserAndTransactions = async () => {
       try {
-        // Buscar usuário pelo dashboard_token
+        // Usar função segura para validar token
         const { data: userData, error: userError } = await supabase
-          .from("users")
-          .select("*")
-          .eq("dashboard_token", dashboard_token)
-          .maybeSingle();
+          .rpc('validate_dashboard_token', { token_input: dashboard_token });
 
-        if (userError || !userData) {
+        if (userError || !userData || userData.length === 0) {
           toast({
             title: "Usuário não encontrado",
             description: "Token do dashboard inválido ou expirado",
@@ -72,13 +69,19 @@ const Dashboard = () => {
           return;
         }
 
-        setUser(userData);
+        const userInfo = userData[0];
+        setUser({
+          uuid: userInfo.user_uuid,
+          nome: userInfo.user_name,
+          user_whatsapp: userInfo.user_whatsapp,
+          dashboard_token: dashboard_token,
+        });
 
         // Buscar transações do usuário
         const { data: transactionsData, error: transactionsError } = await supabase
           .from("transacoes")
           .select("*")
-          .eq("user", userData.user_whatsapp)
+          .eq("user", userInfo.user_whatsapp)
           .order("created_at", { ascending: false });
 
         if (transactionsError) {
