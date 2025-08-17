@@ -8,6 +8,7 @@ import { MetricsCards } from "@/components/dashboard/MetricsCards";
 import { ExpenseChart } from "@/components/dashboard/ExpenseChart";
 import { CategoryChart } from "@/components/dashboard/CategoryChart";
 import { TransactionsList } from "@/components/dashboard/TransactionsList";
+import { ExportButton } from "@/components/dashboard/ExportButton";
 import { TimeFilter } from "@/components/dashboard/TimeFilter";
 import { toast } from "@/hooks/use-toast";
 
@@ -193,6 +194,12 @@ const Dashboard = () => {
           onTimeFilterChange={setTimeFilter}
           customDateRange={customDateRange}
           onCustomDateRangeChange={setCustomDateRange}
+        />
+
+        <ExportButton 
+          transactions={filteredTransactions} 
+          userName={user.nome}
+          timeFilter={timeFilter}
         />
 
         <MetricsCards transactions={filteredTransactions} />
