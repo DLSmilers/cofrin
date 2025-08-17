@@ -74,9 +74,9 @@ export const ExpenseChart = ({ transactions }: ExpenseChartProps) => {
           Evolução Temporal
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="h-[300px]">
-          <ResponsiveContainer width="100%" height="100%">
+      <CardContent className="overflow-hidden">
+        <ChartContainer config={chartConfig} className="h-[300px] w-full">
+          <ResponsiveContainer width="100%" height="100%" minWidth={0}>
             <LineChart data={chartData}>
               <XAxis
                 dataKey="displayDate"
