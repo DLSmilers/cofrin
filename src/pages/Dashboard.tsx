@@ -55,11 +55,11 @@ const Dashboard = () => {
 
     const fetchUserAndTransactions = async () => {
       try {
-        // Usar função segura que valida token E retorna transações
-        const { data: dashboardData, error: dashboardError } = await supabase
-          .rpc('get_dashboard_data', { token_input: dashboard_token });
+        // Usar função segura para validar token
+        const { data: userData, error: userError } = await supabase
+          .rpc('validate_dashboard_token', { token_input: dashboard_token });
 
-        if (dashboardError || !dashboardData || dashboardData.length === 0) {
+        if (userError || !userData || userData.length === 0) {
           toast({
             title: "Usuário não encontrado",
             description: "Token do dashboard inválido ou expirado",
@@ -69,32 +69,31 @@ const Dashboard = () => {
           return;
         }
 
-        // Extrair informações do usuário (primeira linha)
-        const firstRow = dashboardData[0];
-        const userInfo = {
-          uuid: firstRow.user_uuid,
-          nome: firstRow.user_name,
-          user_whatsapp: firstRow.user_whatsapp,
+        const userInfo = userData[0];
+        setUser({
+          uuid: userInfo.user_uuid,
+          nome: userInfo.user_name,
+          user_whatsapp: userInfo.user_whatsapp,
           dashboard_token: dashboard_token,
-        };
-        setUser(userInfo);
+        });
 
-        // Extrair transações (filtrar linhas que têm transações)
-        const transactionsData = dashboardData
-          .filter(row => row.transaction_id !== null)
-          .map(row => ({
-            id: row.transaction_id,
-            valor: row.transaction_valor,
-            user: row.transaction_user,
-            estabelecimento: row.transaction_estabelecimento,
-            detalhes: row.transaction_detalhes,
-            tipo: row.transaction_tipo,
-            categoria: row.transaction_categoria,
-            created_at: row.transaction_created_at,
-            quando: row.transaction_quando,
-          }));
+        // Buscar transações do usuário
+        const { data: transactionsData, error: transactionsError } = await supabase
+          .from("transacoes")
+          .select("*")
+          .eq("user", userInfo.user_whatsapp)
+          .order("created_at", { ascending: false });
 
-        setTransactions(transactionsData || []);
+        if (transactionsError) {
+          console.error("Erro ao buscar transações:", transactionsError);
+          toast({
+            title: "Erro ao carregar dados",
+            description: "Não foi possível carregar as transações",
+            variant: "destructive",
+          });
+        } else {
+          setTransactions(transactionsData || []);
+        }
       } catch (error) {
         console.error("Erro geral:", error);
         toast({

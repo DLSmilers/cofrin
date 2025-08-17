@@ -79,23 +79,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      get_dashboard_data: {
-        Args: { token_input: string }
-        Returns: {
-          transaction_categoria: string
-          transaction_created_at: string
-          transaction_detalhes: string
-          transaction_estabelecimento: string
-          transaction_id: number
-          transaction_quando: string
-          transaction_tipo: string
-          transaction_user: string
-          transaction_valor: number
-          user_name: string
-          user_uuid: string
-          user_whatsapp: string
-        }[]
-      }
       soma_valores_funcionario: {
         Args: { p_funcionario_id: string }
         Returns: number
