@@ -32,14 +32,14 @@ export const TransactionsList = ({ transactions }: TransactionsListProps) => {
   };
 
   return (
-    <Card className="h-96">
+    <Card className="h-80 sm:h-96">
       <CardHeader>
         <CardTitle className="text-lg font-semibold">
           Todas as Transações
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <ScrollArea className="h-80">
+        <ScrollArea className="h-64 sm:h-80">
           <div className="space-y-3">
             {transactions.length === 0 ? (
               <p className="text-center text-muted-foreground py-8">
@@ -53,24 +53,24 @@ export const TransactionsList = ({ transactions }: TransactionsListProps) => {
                 >
                   <div className="flex-1 space-y-1">
                     <div className="flex items-center gap-2">
-                      <p className="font-medium leading-none">
+                      <p className="font-medium leading-none text-sm sm:text-base">
                         {transaction.estabelecimento}
                       </p>
                       <Badge
                         variant={transaction.tipo === "receita" ? "default" : "secondary"}
-                        className={
+                        className={`text-xs ${
                           transaction.tipo === "receita"
                             ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-100"
                             : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100"
-                        }
+                        }`}
                       >
                         {transaction.tipo === "receita" ? "Receita" : "Despesa"}
                       </Badge>
                     </div>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs sm:text-sm text-muted-foreground">
                       {transaction.detalhes}
                     </p>
-                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-2 sm:gap-4 text-xs text-muted-foreground">
                       <span>{transaction.categoria}</span>
                       <span>•</span>
                       <span>{formatDate(transaction.quando || transaction.created_at)}</span>
@@ -78,7 +78,7 @@ export const TransactionsList = ({ transactions }: TransactionsListProps) => {
                   </div>
                   <div className="text-right">
                     <p
-                      className={`font-semibold ${
+                      className={`font-semibold text-sm sm:text-base ${
                         transaction.tipo === "receita"
                           ? "text-emerald-600 dark:text-emerald-400"
                           : "text-red-600 dark:text-red-400"
