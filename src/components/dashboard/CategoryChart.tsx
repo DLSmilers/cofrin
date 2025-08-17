@@ -19,7 +19,7 @@ export const CategoryChart = ({ transactions }: CategoryChartProps) => {
     const categoryMap = new Map<string, number>();
 
     transactions
-      .filter((t) => t.tipo === "gasto")
+      .filter((t) => t.tipo === "despesa")
       .forEach((transaction) => {
         const category = transaction.categoria || "Sem categoria";
         categoryMap.set(category, (categoryMap.get(category) || 0) + transaction.valor);

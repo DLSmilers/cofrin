@@ -13,11 +13,11 @@ interface MetricsCardsProps {
 
 export const MetricsCards = ({ transactions }: MetricsCardsProps) => {
   const totalRendimentos = transactions
-    .filter((t) => t.tipo === "rendimento")
+    .filter((t) => t.tipo === "receita")
     .reduce((sum, t) => sum + t.valor, 0);
 
   const totalGastos = transactions
-    .filter((t) => t.tipo === "gasto")
+    .filter((t) => t.tipo === "despesa")
     .reduce((sum, t) => sum + t.valor, 0);
 
   const saldo = totalRendimentos - totalGastos;

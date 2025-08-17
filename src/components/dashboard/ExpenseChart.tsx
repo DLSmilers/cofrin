@@ -30,9 +30,9 @@ export const ExpenseChart = ({ transactions }: ExpenseChartProps) => {
       }
 
       const data = dataMap.get(dateKey)!;
-      if (transaction.tipo === "gasto") {
+      if (transaction.tipo === "despesa") {
         data.gastos += transaction.valor;
-      } else if (transaction.tipo === "rendimento") {
+      } else if (transaction.tipo === "receita") {
         data.rendimentos += transaction.valor;
       }
     });
