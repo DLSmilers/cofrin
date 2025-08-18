@@ -75,9 +75,18 @@ export const ExpenseChart = ({ transactions }: ExpenseChartProps) => {
         </CardTitle>
       </CardHeader>
       <CardContent className="overflow-hidden">
-        <ChartContainer config={chartConfig} className="h-[300px] w-full">
-          <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-            <LineChart data={chartData}>
+        {chartData.length === 0 ? (
+          <div className="h-[300px] flex items-center justify-center">
+            <div className="text-center space-y-2">
+              <TrendingUp className="h-12 w-12 mx-auto text-muted-foreground/50" />
+              <p className="text-muted-foreground">Nenhuma transação encontrada</p>
+              <p className="text-sm text-muted-foreground">O gráfico aparecerá quando houver dados</p>
+            </div>
+          </div>
+        ) : (
+          <ChartContainer config={chartConfig} className="h-[300px] w-full">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+              <LineChart data={chartData}>
               <XAxis
                 dataKey="displayDate"
                 tick={{ fontSize: 12 }}
@@ -137,6 +146,7 @@ export const ExpenseChart = ({ transactions }: ExpenseChartProps) => {
             </LineChart>
           </ResponsiveContainer>
         </ChartContainer>
+        )}
       </CardContent>
     </Card>
   );

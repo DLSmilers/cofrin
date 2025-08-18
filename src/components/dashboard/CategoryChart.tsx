@@ -120,8 +120,12 @@ export const CategoryChart = ({ transactions }: CategoryChartProps) => {
             </ResponsiveContainer>
           </ChartContainer>
         ) : (
-          <div className="flex items-center justify-center h-[300px] text-muted-foreground">
-            Nenhum gasto encontrado para o período selecionado
+          <div className="h-[300px] flex items-center justify-center">
+            <div className="text-center space-y-2">
+              <PieChartIcon className="h-12 w-12 mx-auto text-muted-foreground/50" />
+              <p className="text-muted-foreground">Nenhum gasto encontrado</p>
+              <p className="text-sm text-muted-foreground">O gráfico por categoria aparecerá quando houver despesas</p>
+            </div>
           </div>
         )}
       </CardContent>

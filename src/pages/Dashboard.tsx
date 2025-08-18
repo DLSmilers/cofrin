@@ -91,8 +91,17 @@ const Dashboard = () => {
             description: "Não foi possível carregar as transações",
             variant: "destructive",
           });
+          setTransactions([]); // Garantir que array vazio seja definido mesmo com erro
         } else {
           setTransactions(transactionsData || []);
+          // Para novos usuários sem transações, mostrar uma mensagem informativa
+          if (!transactionsData || transactionsData.length === 0) {
+            toast({
+              title: "Dashboard carregado com sucesso",
+              description: "Usuário autenticado. Ainda não há transações registradas.",
+              variant: "default",
+            });
+          }
         }
       } catch (error) {
         console.error("Erro geral:", error);
