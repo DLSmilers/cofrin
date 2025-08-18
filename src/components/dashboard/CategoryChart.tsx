@@ -72,15 +72,15 @@ export const CategoryChart = ({ transactions }: CategoryChartProps) => {
       </CardHeader>
       <CardContent>
         {chartData.length > 0 ? (
-          <ChartContainer config={chartConfig} className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
+          <ChartContainer config={chartConfig} className="h-[250px] sm:h-[300px]">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
               <PieChart>
                 <Pie
                   data={chartData}
                   cx="50%"
                   cy="50%"
-                  outerRadius={80}
-                  innerRadius={40}
+                  outerRadius={60}
+                  innerRadius={30}
                   paddingAngle={2}
                   dataKey="value"
                 >
@@ -120,7 +120,7 @@ export const CategoryChart = ({ transactions }: CategoryChartProps) => {
             </ResponsiveContainer>
           </ChartContainer>
         ) : (
-          <div className="h-[300px] flex items-center justify-center">
+          <div className="h-[250px] sm:h-[300px] flex items-center justify-center">
             <div className="text-center space-y-2">
               <PieChartIcon className="h-12 w-12 mx-auto text-muted-foreground/50" />
               <p className="text-muted-foreground">Nenhum gasto encontrado</p>

@@ -76,7 +76,7 @@ export const ExpenseChart = ({ transactions }: ExpenseChartProps) => {
       </CardHeader>
       <CardContent className="overflow-hidden">
         {chartData.length === 0 ? (
-          <div className="h-[300px] flex items-center justify-center">
+          <div className="h-[250px] sm:h-[300px] flex items-center justify-center">
             <div className="text-center space-y-2">
               <TrendingUp className="h-12 w-12 mx-auto text-muted-foreground/50" />
               <p className="text-muted-foreground">Nenhuma transação encontrada</p>
@@ -84,7 +84,7 @@ export const ExpenseChart = ({ transactions }: ExpenseChartProps) => {
             </div>
           </div>
         ) : (
-          <ChartContainer config={chartConfig} className="h-[300px] w-full">
+          <ChartContainer config={chartConfig} className="h-[250px] sm:h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%" minWidth={0}>
               <LineChart data={chartData}>
               <XAxis

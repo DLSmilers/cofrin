@@ -67,11 +67,11 @@ export const EstablishmentChart = ({ transactions }: EstablishmentChartProps) =>
       </CardHeader>
       <CardContent>
         {chartData.length > 0 ? (
-          <ChartContainer config={chartConfig} className="h-[400px]">
-            <ResponsiveContainer width="100%" height="100%">
+          <ChartContainer config={chartConfig} className="h-[300px] sm:h-[400px]">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
               <BarChart
                 data={chartData}
-                margin={{ top: 20, right: 30, left: 20, bottom: 80 }}
+                margin={{ top: 20, right: 10, left: 10, bottom: 60 }}
               >
                 <XAxis
                   dataKey="estabelecimento"
@@ -124,7 +124,7 @@ export const EstablishmentChart = ({ transactions }: EstablishmentChartProps) =>
             </ResponsiveContainer>
           </ChartContainer>
         ) : (
-          <div className="flex items-center justify-center h-[400px] text-muted-foreground">
+          <div className="flex items-center justify-center h-[300px] sm:h-[400px] text-muted-foreground">
             Nenhuma transação encontrada para o período selecionado
           </div>
         )}

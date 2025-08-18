@@ -180,12 +180,12 @@ export const ExportButton = ({ transactions, userName, timeFilter }: ExportButto
   };
 
   return (
-    <Card className="mb-6">
-      <CardContent className="p-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="font-semibold text-lg">Exportar Dados</h3>
-            <p className="text-sm text-muted-foreground">
+    <Card className="mb-4 sm:mb-6">
+      <CardContent className="p-3 sm:p-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-base sm:text-lg">Exportar Dados</h3>
+            <p className="text-xs sm:text-sm text-muted-foreground">
               Compartilhe ou baixe seu relatório financeiro
             </p>
           </div>
@@ -194,11 +194,12 @@ export const ExportButton = ({ transactions, userName, timeFilter }: ExportButto
             <DropdownMenuTrigger asChild>
               <Button 
                 disabled={isExporting}
-                className="bg-gradient-to-r from-primary to-chart-2 hover:from-primary/90 hover:to-chart-2/90"
+                size="sm"
+                className="bg-gradient-to-r from-primary to-chart-2 hover:from-primary/90 hover:to-chart-2/90 w-full sm:w-auto"
               >
-                <Download className="mr-2 h-4 w-4" />
-                Exportar
-                <ChevronDown className="ml-2 h-4 w-4" />
+                <Download className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="text-sm">Exportar</span>
+                <ChevronDown className="ml-2 h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
             </DropdownMenuTrigger>
             
