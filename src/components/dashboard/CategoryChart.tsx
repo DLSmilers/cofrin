@@ -70,10 +70,11 @@ export const CategoryChart = ({ transactions }: CategoryChartProps) => {
           Gastos por Categoria
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="overflow-hidden p-3 sm:p-6">
         {chartData.length > 0 ? (
-          <ChartContainer config={chartConfig} className="h-[250px] sm:h-[300px]">
-            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+          <div className="w-full overflow-hidden">
+            <ChartContainer config={chartConfig} className="h-[250px] sm:h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%" minWidth={0}>
               <PieChart>
                 <Pie
                   data={chartData}
@@ -119,6 +120,7 @@ export const CategoryChart = ({ transactions }: CategoryChartProps) => {
               </PieChart>
             </ResponsiveContainer>
           </ChartContainer>
+          </div>
         ) : (
           <div className="h-[250px] sm:h-[300px] flex items-center justify-center">
             <div className="text-center space-y-2">

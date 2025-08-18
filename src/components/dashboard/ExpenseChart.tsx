@@ -74,7 +74,7 @@ export const ExpenseChart = ({ transactions }: ExpenseChartProps) => {
           Evolução Temporal
         </CardTitle>
       </CardHeader>
-      <CardContent className="overflow-hidden">
+      <CardContent className="overflow-hidden p-3 sm:p-6">
         {chartData.length === 0 ? (
           <div className="h-[250px] sm:h-[300px] flex items-center justify-center">
             <div className="text-center space-y-2">
@@ -84,9 +84,10 @@ export const ExpenseChart = ({ transactions }: ExpenseChartProps) => {
             </div>
           </div>
         ) : (
-          <ChartContainer config={chartConfig} className="h-[250px] sm:h-[300px] w-full">
-            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-              <LineChart data={chartData}>
+          <div className="w-full overflow-hidden">
+            <ChartContainer config={chartConfig} className="h-[250px] sm:h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+                <LineChart data={chartData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
               <XAxis
                 dataKey="displayDate"
                 tick={{ fontSize: 12 }}
@@ -146,6 +147,7 @@ export const ExpenseChart = ({ transactions }: ExpenseChartProps) => {
             </LineChart>
           </ResponsiveContainer>
         </ChartContainer>
+        </div>
         )}
       </CardContent>
     </Card>

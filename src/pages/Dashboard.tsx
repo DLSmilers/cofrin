@@ -217,9 +217,13 @@ const Dashboard = () => {
 
         <MetricsCards transactions={filteredTransactions} />
 
-        <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
-          <ExpenseChart transactions={filteredTransactions} />
-          <CategoryChart transactions={filteredTransactions} />
+        <div className="grid gap-4 sm:gap-6 lg:grid-cols-2 w-full overflow-hidden">
+          <div className="w-full min-w-0 overflow-hidden">
+            <ExpenseChart transactions={filteredTransactions} />
+          </div>
+          <div className="w-full min-w-0 overflow-hidden">
+            <CategoryChart transactions={filteredTransactions} />
+          </div>
         </div>
 
         <TransactionsList transactions={filteredTransactions} />
