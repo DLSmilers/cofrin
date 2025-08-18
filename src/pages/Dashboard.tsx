@@ -93,6 +93,7 @@ const Dashboard = () => {
           });
           setTransactions([]); // Garantir que array vazio seja definido mesmo com erro
         } else {
+          console.log("Transações recebidas do banco:", transactionsData);
           setTransactions(transactionsData || []);
           // Para novos usuários sem transações, mostrar uma mensagem informativa
           if (!transactionsData || transactionsData.length === 0) {
@@ -101,6 +102,8 @@ const Dashboard = () => {
               description: "Usuário autenticado. Ainda não há transações registradas.",
               variant: "default",
             });
+          } else {
+            console.log(`${transactionsData.length} transações encontradas para o usuário`);
           }
         }
       } catch (error) {
@@ -152,9 +155,12 @@ const Dashboard = () => {
 
     const filtered = transactions.filter((transaction) => {
       const transactionDate = new Date(transaction.quando || transaction.created_at);
-      return transactionDate >= startDate && transactionDate <= endDate;
+      const isInRange = transactionDate >= startDate && transactionDate <= endDate;
+      console.log(`Transação ${transaction.id}: ${transaction.estabelecimento} - Data: ${transactionDate.toISOString()} - No intervalo: ${isInRange}`);
+      return isInRange;
     });
 
+    console.log(`Filtro ${timeFilter}: ${filtered.length} de ${transactions.length} transações`);
     setFilteredTransactions(filtered);
   };
 
