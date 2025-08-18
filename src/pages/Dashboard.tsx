@@ -93,7 +93,6 @@ const Dashboard = () => {
           });
           setTransactions([]); // Garantir que array vazio seja definido mesmo com erro
         } else {
-          console.log("Transações recebidas do banco:", transactionsData);
           setTransactions(transactionsData || []);
           // Para novos usuários sem transações, mostrar uma mensagem informativa
           if (!transactionsData || transactionsData.length === 0) {
@@ -102,8 +101,6 @@ const Dashboard = () => {
               description: "Usuário autenticado. Ainda não há transações registradas.",
               variant: "default",
             });
-          } else {
-            console.log(`${transactionsData.length} transações encontradas para o usuário`);
           }
         }
       } catch (error) {
@@ -128,11 +125,12 @@ const Dashboard = () => {
   const filterTransactionsByTime = () => {
     const now = new Date();
     let startDate: Date;
-    let endDate = now;
+    let endDate = new Date(now.getTime() + 24 * 60 * 60 * 1000); // Adiciona 1 dia para incluir hoje
 
     switch (timeFilter) {
       case "day":
         startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
         break;
       case "week":
         startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
@@ -143,7 +141,7 @@ const Dashboard = () => {
       case "custom":
         if (customDateRange.start && customDateRange.end) {
           startDate = customDateRange.start;
-          endDate = customDateRange.end;
+          endDate = new Date(customDateRange.end.getTime() + 24 * 60 * 60 * 1000);
         } else {
           setFilteredTransactions(transactions);
           return;
@@ -155,12 +153,9 @@ const Dashboard = () => {
 
     const filtered = transactions.filter((transaction) => {
       const transactionDate = new Date(transaction.quando || transaction.created_at);
-      const isInRange = transactionDate >= startDate && transactionDate <= endDate;
-      console.log(`Transação ${transaction.id}: ${transaction.estabelecimento} - Data: ${transactionDate.toISOString()} - No intervalo: ${isInRange}`);
-      return isInRange;
+      return transactionDate >= startDate && transactionDate <= endDate;
     });
 
-    console.log(`Filtro ${timeFilter}: ${filtered.length} de ${transactions.length} transações`);
     setFilteredTransactions(filtered);
   };
 
