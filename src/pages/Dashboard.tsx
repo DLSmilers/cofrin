@@ -22,7 +22,7 @@ interface User {
 interface Transaction {
   id: number;
   valor: number;
-  user: string;
+  user_whatsapp: string;
   estabelecimento: string;
   detalhes: string;
   tipo: string;
@@ -78,11 +78,26 @@ const Dashboard = () => {
         });
 
         // Buscar transações do usuário
-        const { data: transactionsData, error: transactionsError } = await supabase
-          .from("transacoes")
-          .select("*")
-          .eq("user", userInfo.user_whatsapp)
-          .order("created_at", { ascending: false });
+        let transactionsData: any[] | null = null;
+        let transactionsError: any = null;
+        
+        // Fazer fetch usando um approach mais simples para evitar problemas de tipos
+        const response = await fetch(
+          `https://rliefaciadhxjjynuyod.supabase.co/rest/v1/transacoes?user_whatsapp=eq.${userInfo.user_whatsapp}&order=created_at.desc`,
+          {
+            headers: {
+              'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsaWVmYWNpYWRoeGpqeW51eW9kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwNTgzOTYsImV4cCI6MjA3MDYzNDM5Nn0.DK2tzoLNRRwF0bG6qkHNrSye3xXGB-x-a0NIICHtZlo',
+              'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsaWVmYWNpYWRoeGpqeW51eW9kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwNTgzOTYsImV4cCI6MjA3MDYzNDM5Nn0.DK2tzoLNRRwF0bG6qkHNrSye3xXGB-x-a0NIICHtZlo',
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+        
+        if (response.ok) {
+          transactionsData = await response.json();
+        } else {
+          transactionsError = { message: 'Erro ao buscar transações' };
+        }
 
         if (transactionsError) {
           console.error("Erro ao buscar transações:", transactionsError);
@@ -93,7 +108,20 @@ const Dashboard = () => {
           });
           setTransactions([]); // Garantir que array vazio seja definido mesmo com erro
         } else {
-          setTransactions(transactionsData || []);
+          // Mapear os dados para a interface Transaction
+          const mappedTransactions: Transaction[] = (transactionsData || []).map((item: any) => ({
+            id: item.id,
+            valor: item.valor,
+            user_whatsapp: item.user_whatsapp,
+            estabelecimento: item.estabelecimento,
+            detalhes: item.detalhes,
+            tipo: item.tipo,
+            categoria: item.categoria,
+            created_at: item.created_at,
+            quando: item.quando,
+          }));
+          
+          setTransactions(mappedTransactions);
           // Para novos usuários sem transações, mostrar uma mensagem informativa
           if (!transactionsData || transactionsData.length === 0) {
             toast({

@@ -5,6 +5,7 @@ interface Transaction {
   id: number;
   valor: number;
   tipo: string;
+  user_whatsapp: string;
 }
 
 interface MetricsCardsProps {

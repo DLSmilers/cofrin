@@ -8,6 +8,7 @@ interface Transaction {
   valor: number;
   tipo: string;
   categoria: string;
+  user_whatsapp: string;
 }
 
 interface CategoryChartProps {

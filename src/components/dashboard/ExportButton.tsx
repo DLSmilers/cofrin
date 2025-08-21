@@ -20,7 +20,7 @@ import { formatCurrency } from "@/lib/utils";
 interface Transaction {
   id: number;
   valor: number;
-  user: string;
+  user_whatsapp: string;
   estabelecimento: string;
   detalhes: string;
   tipo: string;

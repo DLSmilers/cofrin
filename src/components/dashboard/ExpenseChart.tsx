@@ -11,6 +11,7 @@ interface Transaction {
   tipo: string;
   created_at: string;
   quando: string;
+  user_whatsapp: string;
 }
 
 interface ExpenseChartProps {

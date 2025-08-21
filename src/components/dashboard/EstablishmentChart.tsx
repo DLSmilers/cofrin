@@ -8,6 +8,7 @@ interface Transaction {
   valor: number;
   tipo: string;
   estabelecimento: string;
+  user_whatsapp: string;
 }
 
 interface EstablishmentChartProps {
