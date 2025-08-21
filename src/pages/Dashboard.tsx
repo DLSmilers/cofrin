@@ -8,6 +8,7 @@ import { MetricsCards } from "@/components/dashboard/MetricsCards";
 import { ExpenseChart } from "@/components/dashboard/ExpenseChart";
 import { CategoryChart } from "@/components/dashboard/CategoryChart";
 import { TransactionsList } from "@/components/dashboard/TransactionsList";
+import { MetaChart } from "@/components/dashboard/MetaChart";
 import { ExportButton } from "@/components/dashboard/ExportButton";
 import { TimeFilter } from "@/components/dashboard/TimeFilter";
 import { toast } from "@/hooks/use-toast";
@@ -31,12 +32,22 @@ interface Transaction {
   quando: string;
 }
 
+interface Meta {
+  id: number;
+  user_whatsapp: string;
+  meta_mensal: number;
+  gasto_total: number;
+  mes_ano: string;
+  created_at: string;
+}
+
 export type TimeFilterType = "day" | "week" | "month" | "custom";
 
 const Dashboard = () => {
   const { dashboard_token } = useParams<{ dashboard_token: string }>();
   const [user, setUser] = useState<User | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [meta, setMeta] = useState<Meta | null>(null);
   const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [timeFilter, setTimeFilter] = useState<TimeFilterType>("month");
@@ -129,6 +140,26 @@ const Dashboard = () => {
               description: "Usuário autenticado. Ainda não há transações registradas.",
               variant: "default",
             });
+          }
+        }
+
+        // Buscar meta do mês atual
+        const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
+        const metaResponse = await fetch(
+          `https://rliefaciadhxjjynuyod.supabase.co/rest/v1/metas?user_whatsapp=eq.${userInfo.user_whatsapp}&mes_ano=eq.${currentMonth}`,
+          {
+            headers: {
+              'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsaWVmYWNpYWRoeGpqeW51eW9kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwNTgzOTYsImV4cCI6MjA3MDYzNDM5Nn0.DK2tzoLNRRwF0bG6qkHNrSye3xXGB-x-a0NIICHtZlo',
+              'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsaWVmYWNpYWRoeGpqeW51eW9kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwNTgzOTYsImV4cCI6MjA3MDYzNDM5Nn0.DK2tzoLNRRwF0bG6qkHNrSye3xXGB-x-a0NIICHtZlo',
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+        
+        if (metaResponse.ok) {
+          const metaData = await metaResponse.json();
+          if (metaData && metaData.length > 0) {
+            setMeta(metaData[0]);
           }
         }
       } catch (error) {
@@ -253,6 +284,9 @@ const Dashboard = () => {
             <CategoryChart transactions={filteredTransactions} />
           </div>
         </div>
+
+        {/* Meta Chart */}
+        <MetaChart meta={meta} />
 
         <TransactionsList transactions={filteredTransactions} />
       </div>
