@@ -14,99 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      metas: {
-        Row: {
-          created_at: string
-          gasto_total: number | null
-          id: number
-          mes_ano: string | null
-          meta_mensal: number | null
-          user_whatsapp: string | null
-        }
-        Insert: {
-          created_at?: string
-          gasto_total?: number | null
-          id?: number
-          mes_ano?: string | null
-          meta_mensal?: number | null
-          user_whatsapp?: string | null
-        }
-        Update: {
-          created_at?: string
-          gasto_total?: number | null
-          id?: number
-          mes_ano?: string | null
-          meta_mensal?: number | null
-          user_whatsapp?: string | null
-        }
-        Relationships: []
-      }
-      profiles: {
-        Row: {
-          created_at: string
-          first_name: string
-          id: string
-          last_name: string
-          updated_at: string
-          user_id: string
-          whatsapp: string
-        }
-        Insert: {
-          created_at?: string
-          first_name: string
-          id?: string
-          last_name: string
-          updated_at?: string
-          user_id: string
-          whatsapp: string
-        }
-        Update: {
-          created_at?: string
-          first_name?: string
-          id?: string
-          last_name?: string
-          updated_at?: string
-          user_id?: string
-          whatsapp?: string
-        }
-        Relationships: []
-      }
-      subscribers: {
-        Row: {
-          created_at: string
-          email: string
-          id: string
-          stripe_customer_id: string | null
-          subscribed: boolean
-          subscription_end: string | null
-          subscription_tier: string | null
-          updated_at: string
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string
-          email: string
-          id?: string
-          stripe_customer_id?: string | null
-          subscribed?: boolean
-          subscription_end?: string | null
-          subscription_tier?: string | null
-          updated_at?: string
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string
-          email?: string
-          id?: string
-          stripe_customer_id?: string | null
-          subscribed?: boolean
-          subscription_end?: string | null
-          subscription_tier?: string | null
-          updated_at?: string
-          user_id?: string | null
-        }
-        Relationships: []
-      }
       transacoes: {
         Row: {
           categoria: string | null
@@ -116,7 +23,7 @@ export type Database = {
           id: number
           quando: string | null
           tipo: string | null
-          user_whatsapp: string
+          user: string
           valor: number | null
         }
         Insert: {
@@ -127,7 +34,7 @@ export type Database = {
           id?: number
           quando?: string | null
           tipo?: string | null
-          user_whatsapp: string
+          user: string
           valor?: number | null
         }
         Update: {
@@ -138,7 +45,7 @@ export type Database = {
           id?: number
           quando?: string | null
           tipo?: string | null
-          user_whatsapp?: string
+          user?: string
           valor?: number | null
         }
         Relationships: []
