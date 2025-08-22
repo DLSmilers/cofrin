@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { BarChart3, TrendingUp, Shield, Bot, Zap, MessageSquare, DollarSign, Target, ArrowRight, CheckCircle, Users, Star } from "lucide-react";
+import { BarChart3, TrendingUp, Shield, Bot, Zap, MessageSquare, DollarSign, Target, ArrowRight, CheckCircle, Users, Star, Instagram, ShoppingBag, Heart } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 const Index = () => {
@@ -15,16 +15,16 @@ const Index = () => {
 
   const marketingQuestions = [
     {
-      question: "Quanto você gasta por mês sem nem perceber?",
-      options: ["Menos de R$ 200", "R$ 200 - R$ 500", "R$ 500 - R$ 1.000", "Mais de R$ 1.000", "Não faço ideia! 😱"]
+      question: "Quantas vezes você compra algo que viu no Instagram por mês?",
+      options: ["1-2 vezes", "3-5 vezes", "6-10 vezes", "Mais de 10 vezes", "Eu perdi a conta! 😅"]
     },
     {
-      question: "Qual é o seu maior pesadelo financeiro?",
-      options: ["Não conseguir pagar as contas", "Não ter dinheiro para emergências", "Não saber para onde vai o dinheiro", "Não conseguir guardar nada", "Todos os acima! 😰"]
+      question: "Qual é o seu maior 'gatilho' de compra no Instagram?",
+      options: ["Stories com desconto", "Posts de influencers", "Anúncios direcionados", "Reels de produtos", "Qualquer coisa que aparece! 😰"]
     },
     {
-      question: "O que você faria com R$ 10.000 extras por ano?",
-      options: ["Viagem dos sonhos", "Reserva de emergência", "Investir no futuro", "Quitar dívidas", "Gastaria tudo rapidinho 😅"]
+      question: "Quanto você gasta por mês em coisas que viu no Instagram?",
+      options: ["Até R$ 200", "R$ 200 - R$ 500", "R$ 500 - R$ 1.000", "Mais de R$ 1.000", "Prefiro não saber! 😱"]
     }
   ];
 
@@ -66,11 +66,16 @@ const Index = () => {
       <div className="container mx-auto px-4 pb-12">
         {/* Hero Section */}
         <div className="text-center mb-16">
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-primary via-chart-2 to-primary bg-clip-text text-transparent">
-            Pare de Sangrar Dinheiro!
+          <div className="flex items-center justify-center gap-4 mb-6">
+            <Instagram className="h-12 w-12 text-pink-500" />
+            <span className="text-2xl font-bold text-muted-foreground">+</span>
+            <DollarSign className="h-12 w-12 text-primary" />
+          </div>
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-pink-500 via-primary to-pink-500 bg-clip-text text-transparent">
+            Pare de Gastar no Instagram!
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-4xl mx-auto leading-relaxed">
-            Descubra para onde seu dinheiro está indo e <strong className="text-primary">recupere até R$ 10.000 por ano</strong> que você nem sabia que estava perdendo
+            Você sabia que gastamos em média <strong className="text-destructive">R$ 800 por mês</strong> em coisas que vemos no Instagram? Descubra como <strong className="text-primary">controlar esses gastos</strong> e economizar até <strong className="text-success">R$ 10.000 por ano!</strong>
           </p>
 
           {/* Interactive Quiz */}
@@ -78,7 +83,7 @@ const Index = () => {
             <Card className="max-w-2xl mx-auto mb-12 shadow-xl border-primary/20 bg-gradient-to-r from-card to-primary/5">
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl font-bold text-primary">
-                  🎯 Pergunta {currentQuestion + 1} de {marketingQuestions.length}
+                  🛍️ Pergunta {currentQuestion + 1} de {marketingQuestions.length}
                 </CardTitle>
                 <p className="text-lg font-semibold mt-4">
                   {marketingQuestions[currentQuestion].question}
@@ -106,17 +111,17 @@ const Index = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6 text-center">
-                <div className="bg-warning/10 p-6 rounded-lg border border-warning/20">
-                  <h3 className="text-xl font-bold text-warning mb-4">🚨 ALERTA FINANCEIRO</h3>
+                <div className="bg-destructive/10 p-6 rounded-lg border border-destructive/20">
+                  <h3 className="text-xl font-bold text-destructive mb-4">📱 VÍCIO DO INSTAGRAM DETECTADO!</h3>
                   <p className="text-lg leading-relaxed">
-                    Baseado nas suas respostas, você pode estar perdendo entre <strong className="text-destructive">R$ 3.000 a R$ 15.000 por ano</strong> sem nem perceber!
+                    Baseado nas suas respostas, você pode estar gastando entre <strong className="text-destructive">R$ 5.000 a R$ 15.000 por ano</strong> só em compras influenciadas pelo Instagram!
                   </p>
                 </div>
                 
                 <div className="bg-primary/10 p-6 rounded-lg border border-primary/20">
-                  <h3 className="text-xl font-bold text-primary mb-4">✅ A SOLUÇÃO ESTÁ AQUI</h3>
+                  <h3 className="text-xl font-bold text-primary mb-4">✅ LIBERTE-SE DO CONSUMISMO DIGITAL</h3>
                   <p className="text-lg leading-relaxed mb-4">
-                    A cofrin já ajudou mais de <strong>1.000+ pessoas</strong> a recuperarem o controle das suas finanças e economizaram em média <strong className="text-success">R$ 8.500 por ano</strong>!
+                    O cofrin já ajudou mais de <strong>1.000+ pessoas</strong> a controlarem seus gastos no Instagram e outras redes sociais. Elas economizaram em média <strong className="text-success">R$ 8.500 por ano</strong> só cortando compras por impulso!
                   </p>
                 </div>
 
@@ -124,10 +129,10 @@ const Index = () => {
                   <Button 
                     onClick={() => navigate('/pricing')}
                     size="lg"
-                    className="bg-gradient-to-r from-primary to-success hover:from-primary/90 hover:to-success/90 text-white font-bold py-4 px-8 text-lg shadow-lg"
+                    className="bg-gradient-to-r from-pink-500 to-primary hover:from-pink-600 hover:to-primary/90 text-white font-bold py-4 px-8 text-lg shadow-lg"
                   >
-                    <Target className="mr-2 h-6 w-6" />
-                    Ver Planos - 1 Mês Grátis!
+                    <Instagram className="mr-2 h-6 w-6" />
+                    Parar de Gastar no Instagram!
                   </Button>
                   
                   <Button onClick={resetQuiz} variant="outline" size="lg">
@@ -143,20 +148,20 @@ const Index = () => {
         <div className="mb-16">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-primary">
-              Mais de 1.000 pessoas já transformaram suas finanças
+              Mais de 1.000 pessoas já pararam de gastar no Instagram
             </h2>
             <div className="flex items-center justify-center gap-8 text-2xl font-bold">
               <div className="text-center">
                 <div className="text-4xl text-success">R$ 8,5M+</div>
-                <div className="text-sm text-muted-foreground">Economizados pelos usuários</div>
+                <div className="text-sm text-muted-foreground">Economizados em compras online</div>
               </div>
               <div className="text-center">
                 <div className="text-4xl text-primary">1.000+</div>
-                <div className="text-sm text-muted-foreground">Vidas transformadas</div>
+                <div className="text-sm text-muted-foreground">Pessoas livres do consumismo</div>
               </div>
               <div className="text-center">
-                <div className="text-4xl text-warning">4.9⭐</div>
-                <div className="text-sm text-muted-foreground">Avaliação média</div>
+                <div className="text-4xl text-pink-500">95%</div>
+                <div className="text-sm text-muted-foreground">Reduziram gastos no Instagram</div>
               </div>
             </div>
           </div>
@@ -170,15 +175,15 @@ const Index = () => {
                   ))}
                 </div>
                 <p className="text-muted-foreground mb-4">
-                  "Descobri que estava gastando R$ 1.200 por mês em coisas desnecessárias. Em 6 meses já economizei R$ 7.200!"
+                  "Descobri que gastava R$ 1.500 por mês só em coisas que via no Instagram! Com o cofrin consegui me controlar e já economizei R$ 12.000."
                 </p>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
-                    <Users className="h-5 w-5 text-primary" />
+                  <div className="w-10 h-10 bg-pink-500/20 rounded-full flex items-center justify-center">
+                    <Instagram className="h-5 w-5 text-pink-500" />
                   </div>
                   <div>
                     <div className="font-semibold">Marina S.</div>
-                    <div className="text-sm text-muted-foreground">Empresária</div>
+                    <div className="text-sm text-muted-foreground">@marinastyle</div>
                   </div>
                 </div>
               </CardContent>
@@ -192,15 +197,15 @@ const Index = () => {
                   ))}
                 </div>
                 <p className="text-muted-foreground mb-4">
-                  "Nunca pensei que controlar finanças fosse tão fácil! O bot é como ter um consultor financeiro no WhatsApp."
+                  "Era viciada em comprar roupas que via nos Stories. O cofrin me mostrou que gastava R$ 800/mês só nisso! Agora controlo tudo."
                 </p>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-chart-2/20 rounded-full flex items-center justify-center">
-                    <Users className="h-5 w-5 text-chart-2" />
+                  <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
+                    <ShoppingBag className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <div className="font-semibold">Carlos R.</div>
-                    <div className="text-sm text-muted-foreground">Advogado</div>
+                    <div className="font-semibold">Ana P.</div>
+                    <div className="text-sm text-muted-foreground">@ana_fashion</div>
                   </div>
                 </div>
               </CardContent>
@@ -214,15 +219,15 @@ const Index = () => {
                   ))}
                 </div>
                 <p className="text-muted-foreground mb-4">
-                  "Em 3 meses criei uma reserva de emergência de R$ 15.000. O cofrin mudou minha relação com o dinheiro!"
+                  "Parei de comprar por impulso depois de influencers. Em 4 meses economizei R$ 6.000 que antes gastava em bobagens do Instagram!"
                 </p>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-success/20 rounded-full flex items-center justify-center">
-                    <Users className="h-5 w-5 text-success" />
+                    <Heart className="h-5 w-5 text-success" />
                   </div>
                   <div>
-                    <div className="font-semibold">Ana P.</div>
-                    <div className="text-sm text-muted-foreground">Médica</div>
+                    <div className="font-semibold">Julia M.</div>
+                    <div className="text-sm text-muted-foreground">@julia_minimalista</div>
                   </div>
                 </div>
               </CardContent>
@@ -236,41 +241,41 @@ const Index = () => {
             <CardHeader className="text-center">
               <CardTitle className="flex items-center justify-center gap-2 text-2xl">
                 <Bot className="h-6 w-6 text-primary" />
-                Como o cofrin funciona
+                Como o cofrin te livra do consumismo digital
               </CardTitle>
             </CardHeader>
             <CardContent className="text-center space-y-6">
               <p className="text-muted-foreground leading-relaxed text-lg">
-                A <strong className="text-primary">cofrin</strong> é o primeiro bot financeiro inteligente do Brasil. 
-                Registre suas transações conversando naturalmente no WhatsApp e tenha acesso a análises que vão 
-                <strong className="text-success"> transformar sua vida financeira</strong>.
+                O <strong className="text-primary">cofrin</strong> é o primeiro bot anti-consumismo do Brasil. 
+                Registre seus gastos conversando no WhatsApp e receba alertas inteligentes quando estiver gastando demais 
+                <strong className="text-success"> em compras por impulso</strong>.
               </p>
               <div className="grid md:grid-cols-3 gap-6 mt-8">
                 <div className="text-center">
-                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <MessageSquare className="h-8 w-8 text-primary" />
+                  <div className="w-16 h-16 bg-pink-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Instagram className="h-8 w-8 text-pink-500" />
                   </div>
-                  <h4 className="font-bold mb-2 text-lg">1. Converse Natural</h4>
+                  <h4 className="font-bold mb-2 text-lg">1. Detecta Armadilhas</h4>
                   <p className="text-sm text-muted-foreground">
-                    "Gastei R$ 45 no almoço" e pronto! O bot entende e categoriza automaticamente
+                    Identifica quando você gasta mais após usar Instagram, TikTok e outras redes sociais
                   </p>
                 </div>
                 <div className="text-center">
-                  <div className="w-16 h-16 bg-chart-2/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Zap className="h-8 w-8 text-chart-2" />
+                  <div className="w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <ShoppingBag className="h-8 w-8 text-destructive" />
                   </div>
-                  <h4 className="font-bold mb-2 text-lg">2. IA Analisa Tudo</h4>
+                  <h4 className="font-bold mb-2 text-lg">2. Bloqueia Impulsos</h4>
                   <p className="text-sm text-muted-foreground">
-                    Inteligência artificial identifica padrões e vazamentos de dinheiro
+                    Envia alertas quando você está gastando demais em compras por impulso
                   </p>
                 </div>
                 <div className="text-center">
                   <div className="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4">
                     <BarChart3 className="h-8 w-8 text-success" />
                   </div>
-                  <h4 className="font-bold mb-2 text-lg">3. Dashboard Poderoso</h4>
+                  <h4 className="font-bold mb-2 text-lg">3. Mostra Economia</h4>
                   <p className="text-sm text-muted-foreground">
-                    Visualize exatamente para onde vai seu dinheiro e como economizar
+                    Dashboard mostra quanto você economizou parando de comprar por impulso
                   </p>
                 </div>
               </div>
@@ -280,30 +285,30 @@ const Index = () => {
 
         {/* Features Grid */}
         <div className="grid md:grid-cols-3 gap-6 mb-16">
-          <Card className="text-center p-6 hover:shadow-lg transition-shadow border-success/20 hover:border-success/40">
+            <Card className="text-center p-6 hover:shadow-lg transition-shadow border-pink-500/20 hover:border-pink-500/40">
             <CardHeader>
-              <div className="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <DollarSign className="h-10 w-10 text-success" />
+              <div className="w-16 h-16 bg-pink-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Instagram className="h-10 w-10 text-pink-500" />
               </div>
-              <CardTitle className="text-lg">Economize Mais</CardTitle>
+              <CardTitle className="text-lg">Pare o Vício Digital</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground text-sm">
-                Identifique gastos desnecessários e economize até R$ 10.000 por ano com insights inteligentes
+                Identifique e bloqueie gastos compulsivos causados por Instagram, TikTok e outras redes sociais
               </p>
             </CardContent>
           </Card>
 
-          <Card className="text-center p-6 hover:shadow-lg transition-shadow border-primary/20 hover:border-primary/40">
+          <Card className="text-center p-6 hover:shadow-lg transition-shadow border-success/20 hover:border-success/40">
             <CardHeader>
-              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Target className="h-10 w-10 text-primary" />
+              <div className="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Target className="h-10 w-10 text-success" />
               </div>
-              <CardTitle className="text-lg">Atinja suas Metas</CardTitle>
+              <CardTitle className="text-lg">Metas Anti-Consumo</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground text-sm">
-                Defina objetivos financeiros e acompanhe seu progresso com alertas e dicas personalizadas
+                Defina metas de não gastar em categorias específicas e veja sua economia crescer mês a mês
               </p>
             </CardContent>
           </Card>
@@ -327,23 +332,23 @@ const Index = () => {
         <div className="text-center">
           <Card className="max-w-4xl mx-auto shadow-2xl border-primary/20 bg-gradient-to-r from-primary/10 via-card to-success/10">
             <CardContent className="p-12">
-              <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary to-success bg-clip-text text-transparent">
-                Pare de Perder Dinheiro Hoje!
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-pink-500 to-primary bg-clip-text text-transparent">
+                Liberte-se do Consumismo Digital!
               </h2>
               <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-                Junte-se aos milhares de brasileiros que já descobriram onde estava o vazamento do seu dinheiro
+                Junte-se aos milhares de brasileiros que já pararam de gastar compulsivamente no Instagram e outras redes sociais
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <Button 
                   onClick={() => navigate('/pricing')}
                   size="lg"
-                  className="bg-gradient-to-r from-primary to-success hover:from-primary/90 hover:to-success/90 text-white font-bold py-4 px-8 text-xl shadow-xl"
+                  className="bg-gradient-to-r from-pink-500 to-primary hover:from-pink-600 hover:to-primary/90 text-white font-bold py-4 px-8 text-xl shadow-xl"
                 >
-                  <ArrowRight className="mr-2 h-6 w-6" />
-                  Ver Planos - 1 Mês Grátis!
+                  <Instagram className="mr-2 h-6 w-6" />
+                  Parar de Gastar no Instagram!
                 </Button>
                 <p className="text-sm text-muted-foreground">
-                  ✅ 1 mês grátis | ✅ Sem cartão de crédito | ✅ Cancele quando quiser
+                  ✅ 1 mês grátis | ✅ Pare o vício em compras | ✅ Economize milhares
                 </p>
               </div>
             </CardContent>
