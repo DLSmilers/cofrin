@@ -122,12 +122,12 @@ const Index = () => {
 
                 <div className="flex flex-col gap-4">
                   <Button 
-                    onClick={() => navigate('/auth')}
+                    onClick={() => navigate('/pricing')}
                     size="lg"
                     className="bg-gradient-to-r from-primary to-success hover:from-primary/90 hover:to-success/90 text-white font-bold py-4 px-8 text-lg shadow-lg"
                   >
                     <Target className="mr-2 h-6 w-6" />
-                    Quero Recuperar Meu Dinheiro Agora!
+                    Ver Planos - 1 Mês Grátis!
                   </Button>
                   
                   <Button onClick={resetQuiz} variant="outline" size="lg">
@@ -335,15 +335,15 @@ const Index = () => {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <Button 
-                  onClick={() => navigate('/auth')}
+                  onClick={() => navigate('/pricing')}
                   size="lg"
                   className="bg-gradient-to-r from-primary to-success hover:from-primary/90 hover:to-success/90 text-white font-bold py-4 px-8 text-xl shadow-xl"
                 >
                   <ArrowRight className="mr-2 h-6 w-6" />
-                  Começar Agora - É Grátis!
+                  Ver Planos - 1 Mês Grátis!
                 </Button>
                 <p className="text-sm text-muted-foreground">
-                  ✅ Sem cartão de crédito | ✅ Sem compromisso | ✅ Resultados em 24h
+                  ✅ 1 mês grátis | ✅ Sem cartão de crédito | ✅ Cancele quando quiser
                 </p>
               </div>
             </CardContent>
