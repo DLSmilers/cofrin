@@ -87,7 +87,7 @@ export const ExportButton = ({ transactions, userName, timeFilter }: ExportButto
       report += `Nenhuma transação encontrada no período selecionado.\n`;
     }
     
-    report += `\n🤖 _Relatório gerado pela automatizaí_`;
+    report += `\n🤖 _Relatório gerado pelo cofrin_`;
     
     return report;
   };
@@ -166,7 +166,7 @@ export const ExportButton = ({ transactions, userName, timeFilter }: ExportButto
       
       if (navigator.share) {
         await navigator.share({
-          title: 'Relatório Financeiro - automatizaí',
+          title: 'Relatório Financeiro - cofrin',
           text: reportText,
         });
       } else {

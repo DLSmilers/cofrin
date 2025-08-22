@@ -55,7 +55,7 @@ const Index = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Bot className="h-8 w-8 text-primary" />
-            <span className="text-xl font-bold text-primary">automatizaí</span>
+            <span className="text-xl font-bold text-primary">cofrin</span>
           </div>
           <Button onClick={() => navigate('/auth')} variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
             Entrar / Cadastrar
@@ -116,7 +116,7 @@ const Index = () => {
                 <div className="bg-primary/10 p-6 rounded-lg border border-primary/20">
                   <h3 className="text-xl font-bold text-primary mb-4">✅ A SOLUÇÃO ESTÁ AQUI</h3>
                   <p className="text-lg leading-relaxed mb-4">
-                    A automatizaí já ajudou mais de <strong>1.000+ pessoas</strong> a recuperarem o controle das suas finanças e economizaram em média <strong className="text-success">R$ 8.500 por ano</strong>!
+                    A cofrin já ajudou mais de <strong>1.000+ pessoas</strong> a recuperarem o controle das suas finanças e economizaram em média <strong className="text-success">R$ 8.500 por ano</strong>!
                   </p>
                 </div>
 
@@ -214,7 +214,7 @@ const Index = () => {
                   ))}
                 </div>
                 <p className="text-muted-foreground mb-4">
-                  "Em 3 meses criei uma reserva de emergência de R$ 15.000. O automatizaí mudou minha relação com o dinheiro!"
+                  "Em 3 meses criei uma reserva de emergência de R$ 15.000. O cofrin mudou minha relação com o dinheiro!"
                 </p>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-success/20 rounded-full flex items-center justify-center">
@@ -236,12 +236,12 @@ const Index = () => {
             <CardHeader className="text-center">
               <CardTitle className="flex items-center justify-center gap-2 text-2xl">
                 <Bot className="h-6 w-6 text-primary" />
-                Como a automatizaí funciona
+                Como o cofrin funciona
               </CardTitle>
             </CardHeader>
             <CardContent className="text-center space-y-6">
               <p className="text-muted-foreground leading-relaxed text-lg">
-                A <strong className="text-primary">automatizaí</strong> é o primeiro bot financeiro inteligente do Brasil. 
+                A <strong className="text-primary">cofrin</strong> é o primeiro bot financeiro inteligente do Brasil. 
                 Registre suas transações conversando naturalmente no WhatsApp e tenha acesso a análises que vão 
                 <strong className="text-success"> transformar sua vida financeira</strong>.
               </p>

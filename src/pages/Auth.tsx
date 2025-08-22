@@ -103,7 +103,7 @@ const Auth = () => {
           
           <div className="flex items-center justify-center gap-3 mb-4">
             <Bot className="h-8 w-8 text-primary" />
-            <span className="text-lg font-semibold text-primary">automatizaí</span>
+            <span className="text-lg font-semibold text-primary">cofrin</span>
           </div>
         </div>
 
