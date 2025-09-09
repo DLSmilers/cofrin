@@ -176,6 +176,14 @@ const Dashboard = () => {
     }
 
     try {
+      console.log("🔍 Debug - Buscando meta:", {
+        user_whatsapp: user.user_whatsapp,
+        targetMonth,
+        timeFilter,
+        selectedMonth: selectedMonth?.toISOString(),
+        selectedMonthFormatted: selectedMonth ? selectedMonth.toISOString().slice(0, 7) : 'N/A'
+      });
+
       const metaResponse = await fetch(
         `https://rliefaciadhxjjynuyod.supabase.co/rest/v1/metas?user_whatsapp=eq.${user.user_whatsapp}&mes_ano=eq.${targetMonth}`,
         {
@@ -187,13 +195,25 @@ const Dashboard = () => {
         }
       );
       
+      console.log("📡 URL completa:", `https://rliefaciadhxjjynuyod.supabase.co/rest/v1/metas?user_whatsapp=eq.${user.user_whatsapp}&mes_ano=eq.${targetMonth}`);
+      
       if (metaResponse.ok) {
         const metaData = await metaResponse.json();
+        console.log("📊 Resposta da meta:", {
+          found: metaData?.length > 0,
+          data: metaData,
+          targetMonth,
+          searchQuery: `user_whatsapp=eq.${user.user_whatsapp}&mes_ano=eq.${targetMonth}`
+        });
+        
         if (metaData && metaData.length > 0) {
           setMeta(metaData[0]);
         } else {
-          setMeta(null); // Clear meta if no data found for selected month
+          console.log("❌ Nenhuma meta encontrada para:", targetMonth);
+          setMeta(null);
         }
+      } else {
+        console.log("❌ Erro na resposta:", metaResponse.status, metaResponse.statusText);
       }
     } catch (error) {
       console.error("Erro ao buscar meta:", error);
