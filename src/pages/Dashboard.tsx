@@ -11,6 +11,8 @@ import { TransactionsList } from "@/components/dashboard/TransactionsList";
 import { MetaChart } from "@/components/dashboard/MetaChart";
 import { ExportButton } from "@/components/dashboard/ExportButton";
 import { TimeFilter } from "@/components/dashboard/TimeFilter";
+import { AddTransactionDialog } from "@/components/dashboard/AddTransactionDialog";
+import { AddMetaDialog } from "@/components/dashboard/AddMetaDialog";
 import { toast } from "@/hooks/use-toast";
 
 interface User {
@@ -47,7 +49,7 @@ const Dashboard = () => {
   const { dashboard_token } = useParams<{ dashboard_token: string }>();
   const [user, setUser] = useState<User | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [meta, setMeta] = useState<Meta | null>(null);
+  const [metas, setMetas] = useState<Meta[]>([]);
   const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [timeFilter, setTimeFilter] = useState<TimeFilterType>("month");
@@ -159,7 +161,7 @@ const Dashboard = () => {
         if (metaResponse.ok) {
           const metaData = await metaResponse.json();
           if (metaData && metaData.length > 0) {
-            setMeta(metaData[0]);
+            // Remove this line since we're not using setMeta anymore
           }
         }
       } catch (error) {
@@ -174,6 +176,32 @@ const Dashboard = () => {
       }
     };
 
+    fetchUserAndTransactions();
+
+  // Função para refetch de dados
+  const fetchData = async () => {
+    if (!dashboard_token) return;
+    
+    setLoading(true);
+    try {
+      await fetchUserAndTransactions();
+    } finally {
+      setLoading(false);
+    }
+
+  // Função para refetch de dados
+  const fetchData = async () => {
+    if (!dashboard_token) return;
+    
+    setLoading(true);
+    try {
+      await fetchUserAndTransactions();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchUserAndTransactions();
   }, [dashboard_token]);
 
@@ -286,9 +314,12 @@ const Dashboard = () => {
         </div>
 
         {/* Meta Chart */}
-        <MetaChart meta={meta} />
+        <MetaChart metas={metas} onMetaDeleted={fetchData} />
 
-        <TransactionsList transactions={filteredTransactions} />
+        <TransactionsList 
+          transactions={filteredTransactions} 
+          onTransactionDeleted={fetchData}
+        />
       </div>
     </div>
   );
