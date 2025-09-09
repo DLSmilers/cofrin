@@ -162,7 +162,7 @@ const Auth = () => {
           <div className="text-center mt-6">
             <Button
               variant="outline"
-              onClick={() => navigate("/marketing")}
+              onClick={() => navigate("/")}
             >
               Voltar à página inicial
             </Button>

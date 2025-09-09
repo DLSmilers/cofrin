@@ -1,12 +1,45 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { PiggyBank, TrendingUp, Shield, Smartphone, BarChart3 } from "lucide-react";
+import { PiggyBank, TrendingUp, Shield, Smartphone, BarChart3, User, LogOut, LogIn } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
 // Logo será adicionada via URL direta por enquanto
 
 const Marketing = () => {
   const navigate = useNavigate();
+  const [user, setUser] = useState<SupabaseUser | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Check current auth status
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user ?? null);
+      setLoading(false);
+    };
+    
+    checkAuth();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+  };
+
+  const handleDashboardAccess = async () => {
+    if (user) {
+      navigate(`/dashboard/${user.id}`);
+    }
+  };
 
   const features = [
     {
@@ -38,6 +71,70 @@ const Marketing = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-accent/20">
+      {/* Header/Navigation */}
+      <header className="container mx-auto px-4 py-4">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <img 
+              src="/lovable-uploads/5ceb627e-8d72-484e-a56a-dc50cbb91def.png" 
+              alt="Cofrin Logo" 
+              className="h-10 w-10"
+            />
+            <span className="text-2xl font-bold">Cofrin</span>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            {loading ? (
+              <div className="h-9 w-20 bg-muted animate-pulse rounded-md"></div>
+            ) : user ? (
+              <div className="flex items-center gap-3">
+                <Badge variant="secondary" className="flex items-center gap-2">
+                  <User className="h-3 w-3" />
+                  Logado
+                </Badge>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleDashboardAccess}
+                  className="flex items-center gap-2"
+                >
+                  <BarChart3 className="h-4 w-4" />
+                  Meu Relatório
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleSignOut}
+                  className="flex items-center gap-2"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Sair
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigate("/auth")}
+                  className="flex items-center gap-2"
+                >
+                  <LogIn className="h-4 w-4" />
+                  Entrar
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() => navigate("/signup")}
+                  className="bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary"
+                >
+                  Criar Conta
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      </header>
+
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-16">
         <div className="text-center mb-16">
@@ -59,19 +156,31 @@ const Marketing = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button 
-              size="lg" 
-              className="bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground px-8 py-4 text-lg font-semibold"
-              onClick={() => navigate("/signup")}
-            >
-              Começar Agora - É Grátis!
-            </Button>
+            {user ? (
+              <Button 
+                size="lg" 
+                className="bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground px-8 py-4 text-lg font-semibold"
+                onClick={handleDashboardAccess}
+              >
+                <BarChart3 className="mr-2 h-5 w-5" />
+                Ver Meu Relatório
+              </Button>
+            ) : (
+              <Button 
+                size="lg" 
+                className="bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground px-8 py-4 text-lg font-semibold"
+                onClick={() => navigate("/signup")}
+              >
+                Começar Agora - É Grátis!
+              </Button>
+            )}
             <Button 
               variant="outline" 
               size="lg"
               className="px-8 py-4 text-lg"
+              onClick={() => navigate("/dashboard-access")}
             >
-              Ver Demo
+              {user ? "Acesso por Token" : "Ver Demo"}
             </Button>
           </div>
         </div>
@@ -140,13 +249,24 @@ const Marketing = () => {
               Junte-se a milhares de usuários que já descobriram o poder do controle financeiro inteligente.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                size="lg"
-                className="bg-gradient-to-r from-primary to-secondary hover:from-secondary hover:to-primary text-primary-foreground px-12 py-4 text-lg font-semibold"
-                onClick={() => navigate("/signup")}
-              >
-                Criar Conta Gratuita
-              </Button>
+              {user ? (
+                <Button 
+                  size="lg"
+                  className="bg-gradient-to-r from-primary to-secondary hover:from-secondary hover:to-primary text-primary-foreground px-12 py-4 text-lg font-semibold"
+                  onClick={handleDashboardAccess}
+                >
+                  <BarChart3 className="mr-2 h-5 w-5" />
+                  Acessar Meu Relatório
+                </Button>
+              ) : (
+                <Button 
+                  size="lg"
+                  className="bg-gradient-to-r from-primary to-secondary hover:from-secondary hover:to-primary text-primary-foreground px-12 py-4 text-lg font-semibold"
+                  onClick={() => navigate("/signup")}
+                >
+                  Criar Conta Gratuita
+                </Button>
+              )}
               <Button 
                 variant="outline" 
                 size="lg"
