@@ -62,7 +62,7 @@ const Marketing = () => {
             <Button 
               size="lg" 
               className="bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground px-8 py-4 text-lg font-semibold"
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/signup")}
             >
               Começar Agora - É Grátis!
             </Button>
@@ -143,7 +143,7 @@ const Marketing = () => {
               <Button 
                 size="lg"
                 className="bg-gradient-to-r from-primary to-secondary hover:from-secondary hover:to-primary text-primary-foreground px-12 py-4 text-lg font-semibold"
-                onClick={() => navigate("/")}
+                onClick={() => navigate("/signup")}
               >
                 Criar Conta Gratuita
               </Button>
