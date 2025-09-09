@@ -85,7 +85,7 @@ const SignUp = () => {
     try {
       const redirectUrl = `${window.location.origin}/`;
       
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
@@ -120,7 +120,8 @@ const SignUp = () => {
           title: "Conta criada com sucesso!",
           description: "Verifique seu email para confirmar sua conta e começar seu teste gratuito de 30 dias.",
         });
-        navigate("/");
+        // Redirect to dashboard using user ID as token
+        navigate(`/dashboard/${data.user?.id}`);
       }
     } catch (err) {
       toast({

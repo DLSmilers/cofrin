@@ -65,7 +65,9 @@ const Auth = () => {
           title: "Login realizado com sucesso!",
           description: "Bem-vindo de volta ao Cofrin"
         });
-        navigate("/");
+        // Get current user and redirect to dashboard
+        const { data: { user } } = await supabase.auth.getUser();
+        navigate(`/dashboard/${user?.id}`);
       }
     } catch (err) {
       toast({
