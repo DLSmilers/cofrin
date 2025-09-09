@@ -7,6 +7,7 @@ import { Trash2 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { AddTransactionDialog } from "./AddTransactionDialog";
 
 interface Transaction {
   id: number;
@@ -23,9 +24,11 @@ interface Transaction {
 interface TransactionsListProps {
   transactions: Transaction[];
   onTransactionDeleted?: () => void;
+  userWhatsapp: string;
+  onTransactionAdded?: () => void;
 }
 
-export const TransactionsList = ({ transactions, onTransactionDeleted }: TransactionsListProps) => {
+export const TransactionsList = ({ transactions, onTransactionDeleted, userWhatsapp, onTransactionAdded }: TransactionsListProps) => {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("pt-BR", {
@@ -72,9 +75,15 @@ export const TransactionsList = ({ transactions, onTransactionDeleted }: Transac
   return (
     <Card className="h-80 sm:h-96">
       <CardHeader>
-        <CardTitle className="text-lg font-semibold">
-          Todas as Transações
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-lg font-semibold">
+            Todas as Transações
+          </CardTitle>
+          <AddTransactionDialog 
+            userWhatsapp={userWhatsapp}
+            onTransactionAdded={onTransactionAdded}
+          />
+        </div>
       </CardHeader>
       <CardContent>
         <ScrollArea className="h-64 sm:h-80">
