@@ -13,6 +13,7 @@ import { MetaChart } from "@/components/dashboard/MetaChart";
 import { ExportButton } from "@/components/dashboard/ExportButton";
 import { TimeFilter } from "@/components/dashboard/TimeFilter";
 import { toast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 interface User {
   uuid: string;
@@ -46,6 +47,7 @@ export type TimeFilterType = "day" | "week" | "month" | "custom" | "specific-mon
 
 const Dashboard = () => {
   const { dashboard_token } = useParams<{ dashboard_token: string }>();
+  const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [meta, setMeta] = useState<Meta | null>(null);
@@ -83,6 +85,33 @@ const Dashboard = () => {
         }
 
         const userInfo = userData[0];
+        // Verificar se o período de teste expirou
+        const { data: trialExpired, error: trialError } = await supabase
+          .rpc('check_trial_expired', { user_uuid: userInfo.user_uuid });
+
+        if (trialError) {
+          console.error("Erro ao verificar período de teste:", trialError);
+        }
+
+        if (trialExpired) {
+          // Verificar se tem assinatura ativa
+          const { data: subscription } = await supabase
+            .from('subscribers')
+            .select('subscribed')
+            .eq('user_id', userInfo.user_uuid)
+            .single();
+
+          if (!subscription?.subscribed) {
+            toast({
+              title: "Período de teste expirado",
+              description: "Seu período de teste de 30 dias expirou. Escolha um plano para continuar usando o dashboard.",
+              variant: "destructive",
+            });
+            navigate("/pricing");
+            return;
+          }
+        }
+
         setUser({
           uuid: userInfo.user_uuid,
           nome: userInfo.user_name,

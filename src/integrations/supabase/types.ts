@@ -187,6 +187,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_trial_expired: {
+        Args: { user_uuid: string }
+        Returns: boolean
+      }
       get_dashboard_data: {
         Args: { token_input: string }
         Returns: {
