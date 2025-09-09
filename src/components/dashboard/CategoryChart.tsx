@@ -149,3 +149,5 @@ export const CategoryChart = React.memo(({ transactions }: CategoryChartProps) =
     </Card>
   );
 });
+
+CategoryChart.displayName = "CategoryChart";
