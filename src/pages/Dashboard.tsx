@@ -8,6 +8,7 @@ import { MetricsCards } from "@/components/dashboard/MetricsCards";
 import { ExpenseChart } from "@/components/dashboard/ExpenseChart";
 import { CategoryChart } from "@/components/dashboard/CategoryChart";
 import { TransactionsList } from "@/components/dashboard/TransactionsList";
+import { AddTransactionDialog } from "@/components/dashboard/AddTransactionDialog";
 import { MetaChart } from "@/components/dashboard/MetaChart";
 import { ExportButton } from "@/components/dashboard/ExportButton";
 import { TimeFilter } from "@/components/dashboard/TimeFilter";
@@ -268,11 +269,53 @@ const Dashboard = () => {
           onCustomDateRangeChange={setCustomDateRange}
         />
 
-        <ExportButton 
-          transactions={filteredTransactions} 
-          userName={user.nome}
-          timeFilter={timeFilter}
-        />
+        <div className="flex gap-2">
+          <ExportButton 
+            transactions={filteredTransactions} 
+            userName={user.nome}
+            timeFilter={timeFilter}
+          />
+          
+          <AddTransactionDialog
+            userWhatsapp={user.user_whatsapp}
+            onTransactionAdded={() => {
+              // Refresh transactions data
+              const fetchTransactions = async () => {
+                try {
+                  const response = await fetch(
+                    `https://rliefaciadhxjjynuyod.supabase.co/rest/v1/transacoes?user_whatsapp=eq.${user.user_whatsapp}&order=created_at.desc`,
+                    {
+                      headers: {
+                        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsaWVmYWNpYWRoeGpqeW51eW9kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwNTgzOTYsImV4cCI6MjA3MDYzNDM5Nn0.DK2tzoLNRRwF0bG6qkHNrSye3xXGB-x-a0NIICHtZlo',
+                        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsaWVmYWNpYWRoeGpqeW51eW9kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwNTgzOTYsImV4cCI6MjA3MDYzNDM5Nn0.DK2tzoLNRRwF0bG6qkHNrSye3xXGB-x-a0NIICHtZlo',
+                        'Content-Type': 'application/json'
+                      }
+                    }
+                  );
+                  
+                  if (response.ok) {
+                    const transactionsData = await response.json();
+                    const mappedTransactions: Transaction[] = (transactionsData || []).map((item: any) => ({
+                      id: item.id,
+                      valor: item.valor,
+                      user_whatsapp: item.user_whatsapp,
+                      estabelecimento: item.estabelecimento,
+                      detalhes: item.detalhes,
+                      tipo: item.tipo,
+                      categoria: item.categoria,
+                      created_at: item.created_at,
+                      quando: item.quando,
+                    }));
+                    setTransactions(mappedTransactions);
+                  }
+                } catch (error) {
+                  console.error("Erro ao recarregar transações:", error);
+                }
+              };
+              fetchTransactions();
+            }}
+          />
+        </div>
 
         <MetricsCards transactions={filteredTransactions} />
 
