@@ -131,19 +131,5 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
-    overscroll-behavior-x: none;
-    overflow-x: hidden;
-  }
-  
-  /* Prevent horizontal scroll on mobile */
-  * {
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior-x: none;
-  }
-  
-  /* Smooth scroll for mobile */
-  html {
-    scroll-behavior: smooth;
-    overflow-x: hidden;
   }
 }
