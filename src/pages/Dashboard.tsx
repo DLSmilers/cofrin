@@ -177,6 +177,7 @@ const Dashboard = () => {
     };
 
     fetchUserAndTransactions();
+  }, [dashboard_token]);
 
   // Função para refetch de dados
   const fetchData = async () => {
@@ -190,16 +191,6 @@ const Dashboard = () => {
     }
 
   // Função para refetch de dados
-  const fetchData = async () => {
-    if (!dashboard_token) return;
-    
-    setLoading(true);
-    try {
-      await fetchUserAndTransactions();
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
     fetchUserAndTransactions();
@@ -301,6 +292,18 @@ const Dashboard = () => {
           userName={user.nome}
           timeFilter={timeFilter}
         />
+
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+          <AddTransactionDialog 
+            userWhatsapp={user.user_whatsapp}
+            onTransactionAdded={fetchData}
+          />
+          
+          <AddMetaDialog 
+            userWhatsapp={user.user_whatsapp}
+            onMetaAdded={fetchData}
+          />
+        </div>
 
         <MetricsCards transactions={filteredTransactions} />
 
