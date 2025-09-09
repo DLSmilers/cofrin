@@ -1,3 +1,4 @@
+import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from "recharts";
@@ -15,8 +16,8 @@ interface CategoryChartProps {
   transactions: Transaction[];
 }
 
-export const CategoryChart = ({ transactions }: CategoryChartProps) => {
-  const processChartData = () => {
+export const CategoryChart = React.memo(({ transactions }: CategoryChartProps) => {
+  const chartData = React.useMemo(() => {
     const categoryMap = new Map<string, number>();
 
     transactions
@@ -34,17 +35,21 @@ export const CategoryChart = ({ transactions }: CategoryChartProps) => {
       }))
       .sort((a, b) => b.value - a.value)
       .slice(0, 8);
-  };
+  }, [transactions]);
 
-  const chartData = processChartData();
-  const total = chartData.reduce((sum, item) => sum + item.value, 0);
+  const total = React.useMemo(() => 
+    chartData.reduce((sum, item) => sum + item.value, 0), 
+    [chartData]
+  );
 
-  // Calcular percentuais
-  chartData.forEach((item) => {
-    item.percentage = total > 0 ? (item.value / total) * 100 : 0;
-  });
+  const processedChartData = React.useMemo(() => {
+    return chartData.map(item => ({
+      ...item,
+      percentage: total > 0 ? (item.value / total) * 100 : 0,
+    }));
+  }, [chartData, total]);
 
-  const colors = [
+  const colors = React.useMemo(() => [
     "hsl(var(--chart-1))",
     "hsl(var(--chart-2))",
     "hsl(var(--chart-3))",
@@ -53,15 +58,17 @@ export const CategoryChart = ({ transactions }: CategoryChartProps) => {
     "hsl(var(--destructive))",
     "hsl(var(--warning))",
     "hsl(var(--info))",
-  ];
+  ], []);
 
-  const chartConfig = chartData.reduce((config, item, index) => {
-    config[item.name] = {
-      label: item.name,
-      color: colors[index % colors.length],
-    };
-    return config;
-  }, {} as Record<string, { label: string; color: string }>);
+  const chartConfig = React.useMemo(() => {
+    return processedChartData.reduce((config, item, index) => {
+      config[item.name] = {
+        label: item.name,
+        color: colors[index % colors.length],
+      };
+      return config;
+    }, {} as Record<string, { label: string; color: string }>);
+  }, [processedChartData, colors]);
 
   return (
     <Card>
@@ -72,21 +79,28 @@ export const CategoryChart = ({ transactions }: CategoryChartProps) => {
         </CardTitle>
       </CardHeader>
       <CardContent className="overflow-hidden p-3 sm:p-6">
-        {chartData.length > 0 ? (
+        {processedChartData.length > 0 ? (
           <div className="w-full overflow-hidden">
             <ChartContainer config={chartConfig} className="h-[250px] sm:h-[300px] w-full">
-              <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+              <ResponsiveContainer 
+                width="100%" 
+                height="100%" 
+                minWidth={0}
+              >
               <PieChart>
                 <Pie
-                  data={chartData}
+                  data={processedChartData}
                   cx="50%"
                   cy="50%"
                   outerRadius={60}
                   innerRadius={30}
                   paddingAngle={2}
                   dataKey="value"
+                  animationBegin={0}
+                  animationDuration={300}
+                  isAnimationActive={false}
                 >
-                  {chartData.map((_, index) => (
+                  {processedChartData.map((_, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={colors[index % colors.length]}
@@ -134,4 +148,4 @@ export const CategoryChart = ({ transactions }: CategoryChartProps) => {
       </CardContent>
     </Card>
   );
-};
+});
