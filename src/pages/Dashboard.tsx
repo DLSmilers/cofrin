@@ -146,24 +146,7 @@ const Dashboard = () => {
         }
 
         // Buscar meta do mês atual
-        const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
-        const metaResponse = await fetch(
-          `https://rliefaciadhxjjynuyod.supabase.co/rest/v1/metas?user_whatsapp=eq.${userInfo.user_whatsapp}&mes_ano=eq.${currentMonth}`,
-          {
-            headers: {
-              'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsaWVmYWNpYWRoeGpqeW51eW9kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwNTgzOTYsImV4cCI6MjA3MDYzNDM5Nn0.DK2tzoLNRRwF0bG6qkHNrSye3xXGB-x-a0NIICHtZlo',
-              'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsaWVmYWNpYWRoeGpqeW51eW9kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwNTgzOTYsImV4cCI6MjA3MDYzNDM5Nn0.DK2tzoLNRRwF0bG6qkHNrSye3xXGB-x-a0NIICHtZlo',
-              'Content-Type': 'application/json'
-            }
-          }
-        );
-        
-        if (metaResponse.ok) {
-          const metaData = await metaResponse.json();
-          if (metaData && metaData.length > 0) {
-            setMeta(metaData[0]);
-          }
-        }
+        await fetchMetaForCurrentPeriod();
       } catch (error) {
         console.error("Erro geral:", error);
         toast({
@@ -178,6 +161,45 @@ const Dashboard = () => {
 
     fetchUserAndTransactions();
   }, [dashboard_token]);
+
+  const fetchMetaForCurrentPeriod = async () => {
+    if (!user) return;
+
+    let targetMonth: string;
+    
+    if (timeFilter === "specific-month" && selectedMonth) {
+      // Format selected month as YYYY-MM
+      targetMonth = selectedMonth.toISOString().slice(0, 7);
+    } else {
+      // Default to current month
+      targetMonth = new Date().toISOString().slice(0, 7);
+    }
+
+    try {
+      const metaResponse = await fetch(
+        `https://rliefaciadhxjjynuyod.supabase.co/rest/v1/metas?user_whatsapp=eq.${user.user_whatsapp}&mes_ano=eq.${targetMonth}`,
+        {
+          headers: {
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsaWVmYWNpYWRoeGpqeW51eW9kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwNTgzOTYsImV4cCI6MjA3MDYzNDM5Nn0.DK2tzoLNRRwF0bG6qkHNrSye3xXGB-x-a0NIICHtZlo',
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsaWVmYWNpYWRoeGpqeW51eW9kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwNTgzOTYsImV4cCI6MjA3MDYzNDM5Nn0.DK2tzoLNRRwF0bG6qkHNrSye3xXGB-x-a0NIICHtZlo',
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      
+      if (metaResponse.ok) {
+        const metaData = await metaResponse.json();
+        if (metaData && metaData.length > 0) {
+          setMeta(metaData[0]);
+        } else {
+          setMeta(null); // Clear meta if no data found for selected month
+        }
+      }
+    } catch (error) {
+      console.error("Erro ao buscar meta:", error);
+      setMeta(null);
+    }
+  };
 
   useEffect(() => {
     filterTransactionsByTime();
