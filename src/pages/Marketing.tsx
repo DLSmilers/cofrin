@@ -42,7 +42,7 @@ const Marketing = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-accent/20">
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-16">
         <div className="text-center mb-16">
@@ -53,10 +53,6 @@ const Marketing = () => {
               className="h-32 w-32 hover:scale-105 transition-transform duration-300"
             />
           </div>
-          
-          <Badge variant="secondary" className="mb-6 text-lg px-6 py-2">
-            🚀 A Nova Era do Controle Financeiro
-          </Badge>
           
           <h1 className="text-6xl font-bold bg-gradient-to-r from-primary via-primary-glow to-secondary bg-clip-text text-transparent mb-6">
             Cofrin
@@ -87,19 +83,19 @@ const Marketing = () => {
         
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
-          <Card className="text-center border-primary/20 bg-gradient-to-t from-primary/5 to-transparent">
+          <Card className="text-center border-primary/20 bg-gradient-to-t from-primary/10 to-accent/5">
             <CardContent className="pt-6">
               <div className="text-4xl font-bold text-primary mb-2">100%</div>
               <p className="text-muted-foreground">Gratuito para uso pessoal</p>
             </CardContent>
           </Card>
-          <Card className="text-center border-secondary/20 bg-gradient-to-t from-secondary/5 to-transparent">
+          <Card className="text-center border-secondary/20 bg-gradient-to-t from-secondary/15 to-accent/5">
             <CardContent className="pt-6">
               <div className="text-4xl font-bold text-secondary mb-2">24/7</div>
               <p className="text-muted-foreground">Acesso aos seus dados</p>
             </CardContent>
           </Card>
-          <Card className="text-center border-accent/20 bg-gradient-to-t from-accent/5 to-transparent">
+          <Card className="text-center border-accent/30 bg-gradient-to-t from-accent/15 to-muted/10">
             <CardContent className="pt-6">
               <div className="text-4xl font-bold text-accent-foreground mb-2">∞</div>
               <p className="text-muted-foreground">Transações ilimitadas</p>
@@ -140,7 +136,7 @@ const Marketing = () => {
 
       {/* CTA Section */}
       <section className="container mx-auto px-4 py-16">
-        <Card className="bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 border-primary/20">
+        <Card className="bg-gradient-to-r from-primary/15 via-secondary/20 to-accent/15 border-primary/30">
           <CardContent className="text-center py-16">
             <h3 className="text-3xl font-bold mb-4">
               Pronto para transformar suas finanças?
@@ -169,7 +165,7 @@ const Marketing = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-muted/30 border-t border-border/50">
+      <footer className="bg-muted/50 border-t border-border/70">
         <div className="container mx-auto px-4 py-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center gap-3 mb-4 md:mb-0">
