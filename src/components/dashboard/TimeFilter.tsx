@@ -3,17 +3,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CalendarIcon, Clock } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
+import { format, addMonths, subMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 
-export type TimeFilterType = "day" | "week" | "month" | "custom";
+export type TimeFilterType = "day" | "week" | "month" | "custom" | "specific-month";
 
 interface TimeFilterProps {
   timeFilter: TimeFilterType;
   onTimeFilterChange: (filter: TimeFilterType) => void;
   customDateRange: { start?: Date; end?: Date };
   onCustomDateRangeChange: (range: { start?: Date; end?: Date }) => void;
+  selectedMonth?: Date;
+  onMonthChange?: (month: Date) => void;
 }
 
 export const TimeFilter = ({
@@ -21,6 +23,8 @@ export const TimeFilter = ({
   onTimeFilterChange,
   customDateRange,
   onCustomDateRangeChange,
+  selectedMonth,
+  onMonthChange,
 }: TimeFilterProps) => {
   const filterOptions = [
     { value: "day" as const, label: "Hoje" },
@@ -28,6 +32,28 @@ export const TimeFilter = ({
     { value: "month" as const, label: "Mês" },
     { value: "custom" as const, label: "Personalizado" },
   ];
+
+  const generateMonthOptions = () => {
+    const currentDate = new Date();
+    const months = [];
+    
+    // Add 2 previous months
+    for (let i = 2; i >= 1; i--) {
+      months.push(subMonths(currentDate, i));
+    }
+    
+    // Add current month
+    months.push(currentDate);
+    
+    // Add 2 next months
+    for (let i = 1; i <= 2; i++) {
+      months.push(addMonths(currentDate, i));
+    }
+    
+    return months;
+  };
+
+  const monthOptions = generateMonthOptions();
 
   return (
     <Card>
@@ -50,6 +76,38 @@ export const TimeFilter = ({
             </Button>
           ))}
         </div>
+
+        {timeFilter === "month" && (
+          <div className="mt-4">
+            <p className="text-sm font-medium mb-2">Selecionar mês:</p>
+            <div className="flex flex-wrap gap-2">
+              {monthOptions.map((month, index) => {
+                const isCurrentMonth = index === 2; // Current month is at index 2
+                const isSelected = selectedMonth && 
+                  month.getMonth() === selectedMonth.getMonth() && 
+                  month.getFullYear() === selectedMonth.getFullYear();
+                
+                return (
+                  <Button
+                    key={month.toISOString()}
+                    variant={isSelected ? "default" : isCurrentMonth ? "secondary" : "outline"}
+                    size="sm"
+                    onClick={() => {
+                      onMonthChange?.(month);
+                      onTimeFilterChange("specific-month");
+                    }}
+                    className={cn(
+                      isCurrentMonth && !isSelected && "ring-2 ring-primary/20"
+                    )}
+                  >
+                    {format(month, "MMM/yyyy", { locale: ptBR })}
+                    {isCurrentMonth && " (atual)"}
+                  </Button>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {timeFilter === "custom" && (
           <div className="mt-4 flex flex-wrap gap-2">

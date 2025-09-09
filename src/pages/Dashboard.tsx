@@ -42,7 +42,7 @@ interface Meta {
   created_at: string;
 }
 
-export type TimeFilterType = "day" | "week" | "month" | "custom";
+export type TimeFilterType = "day" | "week" | "month" | "custom" | "specific-month";
 
 const Dashboard = () => {
   const { dashboard_token } = useParams<{ dashboard_token: string }>();
@@ -53,6 +53,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [timeFilter, setTimeFilter] = useState<TimeFilterType>("month");
   const [customDateRange, setCustomDateRange] = useState<{start?: Date; end?: Date}>({});
+  const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
 
   useEffect(() => {
     if (!dashboard_token) {
@@ -180,7 +181,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     filterTransactionsByTime();
-  }, [transactions, timeFilter, customDateRange]);
+  }, [transactions, timeFilter, customDateRange, selectedMonth]);
 
   const filterTransactionsByTime = () => {
     const now = new Date();
@@ -197,6 +198,14 @@ const Dashboard = () => {
         break;
       case "month":
         startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+        break;
+      case "specific-month":
+        if (selectedMonth) {
+          startDate = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth(), 1);
+          endDate = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1, 0, 23, 59, 59);
+        } else {
+          startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+        }
         break;
       case "custom":
         if (customDateRange.start && customDateRange.end) {
@@ -267,6 +276,8 @@ const Dashboard = () => {
           onTimeFilterChange={setTimeFilter}
           customDateRange={customDateRange}
           onCustomDateRangeChange={setCustomDateRange}
+          selectedMonth={selectedMonth}
+          onMonthChange={setSelectedMonth}
         />
 
         <ExportButton 
