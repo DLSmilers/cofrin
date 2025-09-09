@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { PiggyBank, TrendingUp, Shield, Smartphone, BarChart3, Users } from "lucide-react";
+import { PiggyBank, TrendingUp, Shield, Smartphone, BarChart3 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 // Logo será adicionada via URL direta por enquanto
 
@@ -33,11 +33,6 @@ const Marketing = () => {
       icon: <BarChart3 className="h-8 w-8" />,
       title: "Dashboard Personalizado",
       description: "Visualize suas finanças com gráficos interativos e métricas personalizadas."
-    },
-    {
-      icon: <Users className="h-8 w-8" />,
-      title: "Gestão Colaborativa",
-      description: "Compartilhe e gerencie finanças familiares ou empresariais com facilidade."
     }
   ];
 
@@ -60,7 +55,7 @@ const Marketing = () => {
           
           <p className="text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed">
             Transforme sua relação com o dinheiro. O <span className="text-primary font-semibold">Cofrin</span> é a 
-            plataforma definitiva para quem quer ter controle total sobre suas finanças pessoais e empresariais.
+            plataforma definitiva para quem quer ter controle total sobre suas finanças pessoais.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -85,8 +80,8 @@ const Marketing = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
           <Card className="text-center border-primary/20 bg-gradient-to-t from-primary/10 to-accent/5">
             <CardContent className="pt-6">
-              <div className="text-4xl font-bold text-primary mb-2">100%</div>
-              <p className="text-muted-foreground">Gratuito para uso pessoal</p>
+              <div className="text-4xl font-bold text-primary mb-2">1 mês</div>
+              <p className="text-muted-foreground">Teste gratuito</p>
             </CardContent>
           </Card>
           <Card className="text-center border-secondary/20 bg-gradient-to-t from-secondary/15 to-accent/5">
