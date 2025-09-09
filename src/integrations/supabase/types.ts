@@ -43,28 +43,43 @@ export type Database = {
       }
       profiles: {
         Row: {
+          address: string | null
+          birth_date: string | null
           created_at: string
           first_name: string
           id: string
           last_name: string
+          phone_whatsapp: string | null
+          trial_end_date: string | null
+          trial_start_date: string | null
           updated_at: string
           user_id: string
           whatsapp: string
         }
         Insert: {
+          address?: string | null
+          birth_date?: string | null
           created_at?: string
           first_name: string
           id?: string
           last_name: string
+          phone_whatsapp?: string | null
+          trial_end_date?: string | null
+          trial_start_date?: string | null
           updated_at?: string
           user_id: string
           whatsapp: string
         }
         Update: {
+          address?: string | null
+          birth_date?: string | null
           created_at?: string
           first_name?: string
           id?: string
           last_name?: string
+          phone_whatsapp?: string | null
+          trial_end_date?: string | null
+          trial_start_date?: string | null
           updated_at?: string
           user_id?: string
           whatsapp?: string
