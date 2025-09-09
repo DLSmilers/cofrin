@@ -1,7 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Trash2 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 interface Transaction {
   id: number;
@@ -17,9 +22,10 @@ interface Transaction {
 
 interface TransactionsListProps {
   transactions: Transaction[];
+  onTransactionDeleted?: () => void;
 }
 
-export const TransactionsList = ({ transactions }: TransactionsListProps) => {
+export const TransactionsList = ({ transactions, onTransactionDeleted }: TransactionsListProps) => {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("pt-BR", {
@@ -29,6 +35,38 @@ export const TransactionsList = ({ transactions }: TransactionsListProps) => {
       hour: "2-digit",
       minute: "2-digit",
     });
+  };
+
+  const handleDeleteTransaction = async (transactionId: number) => {
+    try {
+      const { error } = await supabase
+        .from('transacoes')
+        .delete()
+        .eq('id', transactionId);
+
+      if (error) {
+        toast({
+          title: "Erro ao deletar",
+          description: "Não foi possível deletar a transação",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Transação deletada",
+        description: "A transação foi removida com sucesso",
+      });
+
+      onTransactionDeleted?.();
+    } catch (error) {
+      console.error("Erro ao deletar transação:", error);
+      toast({
+        title: "Erro inesperado",
+        description: "Ocorreu um erro ao deletar a transação",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -76,17 +114,48 @@ export const TransactionsList = ({ transactions }: TransactionsListProps) => {
                       <span>{formatDate(transaction.quando || transaction.created_at)}</span>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p
-                      className={`font-semibold text-sm sm:text-base ${
-                        transaction.tipo === "receita"
-                          ? "text-emerald-600 dark:text-emerald-400"
-                          : "text-red-600 dark:text-red-400"
-                      }`}
-                    >
-                      {transaction.tipo === "receita" ? "+" : "-"}
-                      {formatCurrency(transaction.valor)}
-                    </p>
+                  <div className="flex items-center gap-2">
+                    <div className="text-right">
+                      <p
+                        className={`font-semibold text-sm sm:text-base ${
+                          transaction.tipo === "receita"
+                            ? "text-emerald-600 dark:text-emerald-400"
+                            : "text-red-600 dark:text-red-400"
+                        }`}
+                      >
+                        {transaction.tipo === "receita" ? "+" : "-"}
+                        {formatCurrency(transaction.valor)}
+                      </p>
+                    </div>
+                    
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Tem certeza que deseja deletar esta transação? Esta ação não pode ser desfeita.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction 
+                            onClick={() => handleDeleteTransaction(transaction.id)}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            Deletar
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 </div>
               ))
