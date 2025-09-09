@@ -163,7 +163,11 @@ const Dashboard = () => {
   }, [dashboard_token]);
 
   const fetchMetaForCurrentPeriod = async () => {
-    if (!user) return;
+    console.log("🚀 Função fetchMetaForCurrentPeriod INICIADA");
+    if (!user) {
+      console.log("❌ User não existe, saindo da função");
+      return;
+    }
 
     let targetMonth: string;
     
@@ -220,6 +224,11 @@ const Dashboard = () => {
       setMeta(null);
     }
   };
+
+  useEffect(() => {
+    console.log("🔄 useEffect meta disparado:", { timeFilter, selectedMonth: selectedMonth?.toISOString(), user: !!user });
+    fetchMetaForCurrentPeriod();
+  }, [timeFilter, selectedMonth, user]);
 
   useEffect(() => {
     filterTransactionsByTime();
