@@ -131,5 +131,64 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    /* Optimize scrolling performance */
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+
+  /* Improve scroll performance */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Optimize for mobile scrolling */
+  @media (max-width: 768px) {
+    * {
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      -webkit-perspective: 1000;
+      perspective: 1000;
+    }
+    
+    /* Prevent horizontal scroll on mobile */
+    body {
+      overflow-x: hidden;
+      position: relative;
+    }
+    
+    /* Optimize touch scrolling */
+    .scrollable {
+      -webkit-overflow-scrolling: touch;
+      overflow-scrolling: touch;
+    }
+  }
+
+  /* Performance optimizations for charts and heavy components */
+  .recharts-wrapper {
+    will-change: transform;
+    transform: translateZ(0);
+  }
+
+  /* Reduce reflows during scroll */
+  .container {
+    contain: layout style paint;
+  }
+
+  /* Optimize hover effects to not cause reflows */
+  .hover-optimized {
+    will-change: transform;
+  }
+
+  .hover-optimized:hover {
+    transform: scale(1.02);
+  }
+
+  /* Better transition performance */
+  .transition-optimized {
+    transition: transform 0.2s ease-out;
+    will-change: transform;
   }
 }

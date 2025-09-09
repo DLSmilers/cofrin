@@ -259,7 +259,7 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
-      <div className="container mx-auto p-3 sm:p-6 space-y-4 sm:space-y-6 max-w-full">
+      <div className="container scrollable mx-auto p-3 sm:p-6 space-y-4 sm:space-y-6 max-w-full">
         <DashboardHeader userName={user.nome} />
         
         <TimeFilter

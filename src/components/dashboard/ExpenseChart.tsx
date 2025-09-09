@@ -1,3 +1,4 @@
+import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from "recharts";
@@ -18,8 +19,8 @@ interface ExpenseChartProps {
   transactions: Transaction[];
 }
 
-export const ExpenseChart = ({ transactions }: ExpenseChartProps) => {
-  const processChartData = () => {
+export const ExpenseChart = React.memo(({ transactions }: ExpenseChartProps) => {
+  const chartData = React.useMemo(() => {
     const dataMap = new Map<string, { gastos: number; rendimentos: number }>();
 
     transactions.forEach((transaction) => {
@@ -48,11 +49,9 @@ export const ExpenseChart = ({ transactions }: ExpenseChartProps) => {
       }))
       .sort((a, b) => a.date.localeCompare(b.date))
       .slice(-30); // Últimos 30 dias
-  };
+  }, [transactions]);
 
-  const chartData = processChartData();
-
-  const chartConfig = {
+  const chartConfig = React.useMemo(() => ({
     gastos: {
       label: "Gastos",
       color: "hsl(var(--destructive))",
@@ -65,7 +64,7 @@ export const ExpenseChart = ({ transactions }: ExpenseChartProps) => {
       label: "Saldo",
       color: "hsl(var(--chart-2))",
     },
-  };
+  }), []);
 
   return (
     <Card>
@@ -127,6 +126,7 @@ export const ExpenseChart = ({ transactions }: ExpenseChartProps) => {
                 strokeWidth={2}
                 dot={{ r: 3 }}
                 activeDot={{ r: 5 }}
+                isAnimationActive={false}
               />
               <Line
                 type="monotone"
@@ -135,6 +135,7 @@ export const ExpenseChart = ({ transactions }: ExpenseChartProps) => {
                 strokeWidth={2}
                 dot={{ r: 3 }}
                 activeDot={{ r: 5 }}
+                isAnimationActive={false}
               />
               <Line
                 type="monotone"
@@ -144,13 +145,16 @@ export const ExpenseChart = ({ transactions }: ExpenseChartProps) => {
                 strokeDasharray="5 5"
                 dot={{ r: 3 }}
                 activeDot={{ r: 5 }}
+                isAnimationActive={false}
               />
             </LineChart>
-          </ResponsiveContainer>
+           </ResponsiveContainer>
         </ChartContainer>
         </div>
         )}
       </CardContent>
     </Card>
   );
-};
+});
+
+ExpenseChart.displayName = "ExpenseChart";

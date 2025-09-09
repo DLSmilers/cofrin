@@ -1,3 +1,4 @@
+import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -28,8 +29,8 @@ interface TransactionsListProps {
   onTransactionAdded?: () => void;
 }
 
-export const TransactionsList = ({ transactions, onTransactionDeleted, userWhatsapp, onTransactionAdded }: TransactionsListProps) => {
-  const formatDate = (dateString: string) => {
+export const TransactionsList = React.memo(({ transactions, onTransactionDeleted, userWhatsapp, onTransactionAdded }: TransactionsListProps) => {
+  const formatDate = React.useCallback((dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("pt-BR", {
       day: "2-digit",
@@ -38,9 +39,9 @@ export const TransactionsList = ({ transactions, onTransactionDeleted, userWhats
       hour: "2-digit",
       minute: "2-digit",
     });
-  };
+  }, []);
 
-  const handleDeleteTransaction = async (transactionId: number) => {
+  const handleDeleteTransaction = React.useCallback(async (transactionId: number) => {
     try {
       const { error } = await supabase
         .from('transacoes')
@@ -70,7 +71,7 @@ export const TransactionsList = ({ transactions, onTransactionDeleted, userWhats
         variant: "destructive",
       });
     }
-  };
+  }, [onTransactionDeleted]);
 
   return (
     <Card className="h-80 sm:h-96">
@@ -174,4 +175,6 @@ export const TransactionsList = ({ transactions, onTransactionDeleted, userWhats
       </CardContent>
     </Card>
   );
-};
+});
+
+TransactionsList.displayName = "TransactionsList";
