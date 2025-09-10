@@ -16,6 +16,9 @@ import {
   ChevronDown 
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import { useSubscription } from "@/hooks/use-subscription";
+import { Lock } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 interface Transaction {
   id: number;
@@ -37,6 +40,7 @@ interface ExportButtonProps {
 
 export const ExportButton = ({ transactions, userName, timeFilter }: ExportButtonProps) => {
   const [isExporting, setIsExporting] = useState(false);
+  const { hasAccess, isLoading, subscribed, isTrialActive } = useSubscription();
 
   const generateReportText = () => {
     const now = new Date();
@@ -122,6 +126,15 @@ export const ExportButton = ({ transactions, userName, timeFilter }: ExportButto
   };
 
   const exportToPDF = async () => {
+    if (!hasAccess()) {
+      toast({
+        title: "Acesso Restrito",
+        description: "Você precisa de uma assinatura ativa ou estar no período de teste para exportar relatórios.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setIsExporting(true);
     try {
       const reportText = generateReportText();
@@ -132,6 +145,15 @@ export const ExportButton = ({ transactions, userName, timeFilter }: ExportButto
   };
 
   const exportToExcel = async () => {
+    if (!hasAccess()) {
+      toast({
+        title: "Acesso Restrito", 
+        description: "Você precisa de uma assinatura ativa ou estar no período de teste para exportar relatórios.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setIsExporting(true);
     try {
       const csvContent = generateCSV();
@@ -142,6 +164,15 @@ export const ExportButton = ({ transactions, userName, timeFilter }: ExportButto
   };
 
   const shareToWhatsApp = async () => {
+    if (!hasAccess()) {
+      toast({
+        title: "Acesso Restrito",
+        description: "Você precisa de uma assinatura ativa ou estar no período de teste para compartilhar relatórios.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setIsExporting(true);
     try {
       const reportText = generateReportText();
@@ -160,6 +191,15 @@ export const ExportButton = ({ transactions, userName, timeFilter }: ExportButto
   };
 
   const shareNative = async () => {
+    if (!hasAccess()) {
+      toast({
+        title: "Acesso Restrito",
+        description: "Você precisa de uma assinatura ativa ou estar no período de teste para compartilhar relatórios.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setIsExporting(true);
     try {
       const reportText = generateReportText();
@@ -193,17 +233,42 @@ export const ExportButton = ({ transactions, userName, timeFilter }: ExportButto
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button 
-                disabled={isExporting}
+                disabled={isExporting || isLoading}
                 size="sm"
-                className="bg-gradient-to-r from-primary to-chart-2 hover:from-primary/90 hover:to-chart-2/90 w-full sm:w-auto"
+                className={`w-full sm:w-auto ${
+                  hasAccess() 
+                    ? "bg-gradient-to-r from-primary to-chart-2 hover:from-primary/90 hover:to-chart-2/90" 
+                    : "bg-muted hover:bg-muted"
+                }`}
               >
-                <Download className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="text-sm">Exportar</span>
+                {hasAccess() ? (
+                  <Download className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                ) : (
+                  <Lock className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                )}
+                <span className="text-sm">
+                  {hasAccess() ? "Exportar" : "Bloqueado"}
+                </span>
                 <ChevronDown className="ml-2 h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
             </DropdownMenuTrigger>
             
             <DropdownMenuContent align="end" className="w-56">
+              {!hasAccess() && (
+                <div className="px-2 py-3 text-center border-b mb-2">
+                  <div className="flex flex-col items-center space-y-2">
+                    <Lock className="h-6 w-6 text-muted-foreground" />
+                    <div>
+                      <p className="text-sm font-medium">Acesso Restrito</p>
+                      <p className="text-xs text-muted-foreground">
+                        {!subscribed && !isTrialActive 
+                          ? "Assine um plano para exportar relatórios"
+                          : "Carregando status..."}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
               <DropdownMenuItem onClick={shareToWhatsApp}>
                 <MessageCircle className="mr-2 h-4 w-4 text-green-600" />
                 <div className="flex flex-col">

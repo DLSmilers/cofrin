@@ -1,28 +1,67 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { CheckCircle, Loader2 } from "lucide-react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 const PaymentSuccess = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [isVerifying, setIsVerifying] = useState(true);
+  const sessionId = searchParams.get("session_id");
 
   useEffect(() => {
-    // Atualizar status da assinatura quando a página carregar
-    const updateSubscription = async () => {
+    const verifyPayment = async () => {
+      if (!sessionId) {
+        setIsVerifying(false);
+        return;
+      }
+
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user) {
-          await supabase.functions.invoke("check-subscription");
+        // Verify subscription status after payment
+        const { error } = await supabase.functions.invoke("check-subscription");
+        
+        if (error) {
+          console.error("Erro ao verificar assinatura:", error);
+          toast({
+            title: "Atenção",
+            description: "Pagamento processado, mas não foi possível verificar o status. Tente recarregar a página.",
+            variant: "default",
+          });
+        } else {
+          toast({
+            title: "Pagamento confirmado!",
+            description: "Sua assinatura foi ativada com sucesso.",
+            variant: "default",
+          });
         }
       } catch (error) {
-        console.error("Erro ao atualizar assinatura:", error);
+        console.error("Erro ao verificar pagamento:", error);
+      } finally {
+        setIsVerifying(false);
       }
     };
 
-    updateSubscription();
-  }, []);
+    verifyPayment();
+  }, [sessionId]);
+
+  if (isVerifying) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardContent className="text-center py-8">
+            <Loader2 className="mx-auto mb-4 w-16 h-16 animate-spin text-primary" />
+            <h2 className="text-xl font-semibold mb-2">Verificando pagamento...</h2>
+            <p className="text-muted-foreground">
+              Aguarde enquanto confirmamos sua assinatura.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   const handleBackToDashboard = async () => {
     try {

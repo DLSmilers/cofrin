@@ -80,8 +80,18 @@ serve(async (req) => {
         },
       ],
       mode: "subscription",
-      success_url: `${req.headers.get("origin")}/payment-success`,
+      payment_method_types: ["card"],
+      billing_address_collection: "required",
+      customer_update: {
+        address: "auto",
+        name: "auto",
+      },
+      success_url: `${req.headers.get("origin")}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.headers.get("origin")}/pricing`,
+      metadata: {
+        user_id: user.id,
+        subscription_type: priceType,
+      },
     });
 
     logStep("Checkout session created", { sessionId: session.id, url: session.url });
