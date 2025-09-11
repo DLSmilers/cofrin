@@ -125,7 +125,7 @@ const Marketing = () => {
                 <Button
                   size="sm"
                   onClick={() => navigate("/signup")}
-                  className="bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary"
+                  className=""
                 >
                   Criar Conta
                 </Button>
