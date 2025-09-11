@@ -139,7 +139,7 @@ const Marketing = () => {
           </Card>
           <Card className="text-center border-secondary/20 bg-gradient-to-t from-secondary/15 to-accent/5">
             <CardContent className="pt-6">
-              <div className="text-4xl font-bold text-primary mb-2 bg-[#fdfdfd]">24/7</div>
+              <div className="text-4xl font-bold text-secondary mb-2">24/7</div>
               <p className="text-muted-foreground">Acesso aos seus dados</p>
             </CardContent>
           </Card>
@@ -194,7 +194,7 @@ const Marketing = () => {
               {user ? <Button size="lg" className="bg-gradient-to-r from-primary to-secondary hover:from-secondary hover:to-primary text-primary-foreground px-12 py-4 text-lg font-semibold" onClick={handleDashboardAccess}>
                   <BarChart3 className="mr-2 h-5 w-5" />
                   Acessar Meu Relatório
-                </Button> : <Button size="lg" onClick={() => navigate("/signup")} className="px-12 py-4 text-lg font-semibold">
+                </Button> : <Button size="lg" className="bg-gradient-to-r from-primary to-secondary hover:from-secondary hover:to-primary text-primary-foreground px-12 py-4 text-lg font-semibold" onClick={() => navigate("/signup")}>
                   Criar Conta Gratuita
                 </Button>}
               <Button variant="outline" size="lg" className="px-12 py-4 text-lg border-primary/30 hover:bg-primary/5">
@@ -214,7 +214,7 @@ const Marketing = () => {
               <span className="text-xl font-bold">Cofrin</span>
             </div>
             <p className="text-muted-foreground text-center md:text-right">
-              © 2024 Cofrin. Todos os direitos reservados. <br />
+              © 2025 Cofrin. Todos os direitos reservados. <br />
               Transformando vidas através da educação financeira.
             </p>
           </div>
