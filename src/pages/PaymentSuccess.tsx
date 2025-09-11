@@ -25,23 +25,48 @@ const PaymentSuccess = () => {
         // Wait a bit before checking to allow Stripe to process
         await new Promise(resolve => setTimeout(resolve, 2000));
         
-        // Get current session for authorization
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session?.access_token) {
-          console.error("❌ Sem token de acesso");
+        // Try to refresh session first
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError || !session?.access_token) {
+          console.error("❌ Sem sessão válida, tentando renovar...");
+          
+          // Try to refresh the session
+          const { data: { session: refreshedSession }, error: refreshError } = await supabase.auth.refreshSession();
+          
+          if (refreshError || !refreshedSession?.access_token) {
+            console.error("❌ Não foi possível renovar a sessão");
+            toast({
+              title: "Pagamento processado!",
+              description: "Faça login para verificar sua assinatura.",
+              variant: "default",
+            });
+            setTimeout(() => navigate("/auth"), 3000);
+            return;
+          }
+          
+          console.log("✅ Sessão renovada com sucesso");
+        }
+
+        const currentSession = session || await supabase.auth.getSession().then(res => res.data.session);
+        
+        if (!currentSession?.access_token) {
+          console.error("❌ Ainda sem token de acesso após renovação");
           toast({
-            title: "Erro de autenticação",
-            description: "Faça login novamente para verificar sua assinatura.",
-            variant: "destructive",
+            title: "Pagamento processado!",
+            description: "Faça login para verificar sua assinatura.",
+            variant: "default",
           });
-          setTimeout(() => navigate("/auth"), 2000);
+          setTimeout(() => navigate("/auth"), 3000);
           return;
         }
+
+        console.log("✅ Token de acesso disponível, verificando assinatura...");
 
         // Verify subscription status after payment with proper auth
         const { data, error } = await supabase.functions.invoke("check-subscription", {
           headers: {
-            Authorization: `Bearer ${session.access_token}`,
+            Authorization: `Bearer ${currentSession.access_token}`,
           },
         });
         console.log("📊 Resultado da verificação:", { data, error });
