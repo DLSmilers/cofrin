@@ -146,7 +146,7 @@ const Marketing = () => {
             />
           </div>
           
-          <h1 className="text-6xl font-bold bg-gradient-to-r from-primary via-primary-glow to-secondary bg-clip-text text-transparent mb-6">
+          <h1 className="text-6xl font-bold bg-clip-text text-transparent mb-6">
             Cofrin
           </h1>
           
