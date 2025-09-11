@@ -20,25 +20,59 @@ const PaymentSuccess = () => {
       }
 
       try {
+        console.log("🔍 Verificando pagamento...");
+        
+        // Wait a bit before checking to allow Stripe to process
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
         // Verify subscription status after payment
-        const { error } = await supabase.functions.invoke("check-subscription");
+        const { data, error } = await supabase.functions.invoke("check-subscription");
+        console.log("📊 Resultado da verificação:", { data, error });
         
         if (error) {
           console.error("Erro ao verificar assinatura:", error);
           toast({
-            title: "Atenção",
-            description: "Pagamento processado, mas não foi possível verificar o status. Tente recarregar a página.",
+            title: "Verificando assinatura...",
+            description: "Aguarde, estamos confirmando seu pagamento.",
             variant: "default",
           });
+          
+          // Try again after a delay
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000);
         } else {
-          toast({
-            title: "Pagamento confirmado!",
-            description: "Sua assinatura foi ativada com sucesso.",
-            variant: "default",
-          });
+          if (data?.subscribed) {
+            toast({
+              title: "Pagamento confirmado!",
+              description: "Sua assinatura foi ativada com sucesso.",
+              variant: "default",
+            });
+          } else {
+            toast({
+              title: "Processando pagamento...",
+              description: "Seu pagamento está sendo processado. A página será atualizada automaticamente.",
+              variant: "default",
+            });
+            
+            // Retry verification after a delay
+            setTimeout(() => {
+              window.location.reload();
+            }, 5000);
+          }
         }
       } catch (error) {
         console.error("Erro ao verificar pagamento:", error);
+        toast({
+          title: "Verificando pagamento...",
+          description: "Processando sua assinatura, aguarde...",
+          variant: "default",
+        });
+        
+        // Retry after error
+        setTimeout(() => {
+          window.location.reload();
+        }, 5000);
       } finally {
         setIsVerifying(false);
       }
