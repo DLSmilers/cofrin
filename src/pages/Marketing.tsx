@@ -139,7 +139,7 @@ const Marketing = () => {
           </Card>
           <Card className="text-center border-secondary/20 bg-gradient-to-t from-secondary/15 to-accent/5">
             <CardContent className="pt-6">
-              <div className="text-4xl font-bold text-secondary mb-2">24/7</div>
+              <div className="text-4xl font-bold text-primary mb-2 bg-[#fdfdfd]">24/7</div>
               <p className="text-muted-foreground">Acesso aos seus dados</p>
             </CardContent>
           </Card>
