@@ -25,8 +25,25 @@ const PaymentSuccess = () => {
         // Wait a bit before checking to allow Stripe to process
         await new Promise(resolve => setTimeout(resolve, 2000));
         
-        // Verify subscription status after payment
-        const { data, error } = await supabase.functions.invoke("check-subscription");
+        // Get current session for authorization
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.access_token) {
+          console.error("❌ Sem token de acesso");
+          toast({
+            title: "Erro de autenticação",
+            description: "Faça login novamente para verificar sua assinatura.",
+            variant: "destructive",
+          });
+          setTimeout(() => navigate("/auth"), 2000);
+          return;
+        }
+
+        // Verify subscription status after payment with proper auth
+        const { data, error } = await supabase.functions.invoke("check-subscription", {
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
+        });
         console.log("📊 Resultado da verificação:", { data, error });
         
         if (error) {
