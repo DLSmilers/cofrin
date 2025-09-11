@@ -194,7 +194,7 @@ const Marketing = () => {
               {user ? <Button size="lg" className="bg-gradient-to-r from-primary to-secondary hover:from-secondary hover:to-primary text-primary-foreground px-12 py-4 text-lg font-semibold" onClick={handleDashboardAccess}>
                   <BarChart3 className="mr-2 h-5 w-5" />
                   Acessar Meu Relatório
-                </Button> : <Button size="lg" className="bg-gradient-to-r from-primary to-secondary hover:from-secondary hover:to-primary text-primary-foreground px-12 py-4 text-lg font-semibold" onClick={() => navigate("/signup")}>
+                </Button> : <Button size="lg" onClick={() => navigate("/signup")} className="px-12 py-4 text-lg font-semibold">
                   Criar Conta Gratuita
                 </Button>}
               <Button variant="outline" size="lg" className="px-12 py-4 text-lg border-primary/30 hover:bg-primary/5">
