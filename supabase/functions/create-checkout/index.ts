@@ -90,7 +90,7 @@ serve(async (req) => {
       payment_method_types: ["card"],
       billing_address_collection: "required",
       ...(customerId ? { customer_update: { address: "auto", name: "auto" } } : {}),
-      success_url: `${req.headers.get("origin")}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${req.headers.get("origin")}/payment-success-close?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.headers.get("origin")}/pricing`,
       metadata: {
         user_id: user.id,

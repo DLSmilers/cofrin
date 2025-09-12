@@ -5,12 +5,9 @@ import { Check, Loader2, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { SubscribeButton } from "@/components/ui/SubscribeButton";
 
 const Pricing = () => {
-  const [loading, setLoading] = useState<{monthly: boolean, annual: boolean}>({
-    monthly: false,
-    annual: false
-  });
   const navigate = useNavigate();
   const [userDashboardToken, setUserDashboardToken] = useState<string | null>(null);
 
@@ -29,45 +26,6 @@ const Pricing = () => {
     
     fetchUserDashboardToken();
   }, []);
-
-  const handleSubscribe = async (priceType: "monthly" | "annual") => {
-    setLoading(prev => ({ ...prev, [priceType]: true }));
-    
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        toast({
-          title: "Erro",
-          description: "Você precisa estar logado para assinar um plano",
-          variant: "destructive",
-        });
-        navigate("/auth");
-        return;
-      }
-
-      const { data, error } = await supabase.functions.invoke("create-checkout", {
-        body: { 
-          priceType,
-          amount: priceType === "monthly" ? 2000 : 18000, // 20 reais mensal, 180 reais anual
-          interval: priceType === "monthly" ? "month" : "year"
-        },
-      });
-
-      if (error) throw error;
-
-      if (data?.url) {
-        window.open(data.url, '_blank');
-      }
-    } catch (error: any) {
-      toast({
-        title: "Erro ao processar pagamento",
-        description: error.message || "Tente novamente",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(prev => ({ ...prev, [priceType]: false }));
-    }
-  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -123,20 +81,14 @@ const Pricing = () => {
                   <span>Suporte por email</span>
                 </div>
               </div>
-              <Button 
-                className="w-full mt-6" 
-                onClick={() => handleSubscribe("monthly")}
-                disabled={loading.monthly}
+              <SubscribeButton
+                priceType="monthly"
+                amount={2000}
+                interval="month"
+                className="w-full mt-6"
               >
-                {loading.monthly ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Processando...
-                  </>
-                ) : (
-                  "Assinar Plano Mensal"
-                )}
-              </Button>
+                Assinar Plano Mensal
+              </SubscribeButton>
             </CardContent>
           </Card>
 
@@ -183,21 +135,14 @@ const Pricing = () => {
                   <span className="font-medium">2 meses grátis</span>
                 </div>
               </div>
-              <Button 
-                className="w-full mt-6" 
-                onClick={() => handleSubscribe("annual")}
-                disabled={loading.annual}
-                variant="default"
+              <SubscribeButton
+                priceType="annual"
+                amount={18000}
+                interval="year"
+                className="w-full mt-6"
               >
-                {loading.annual ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Processando...
-                  </>
-                ) : (
-                  "Assinar Plano Anual"
-                )}
-              </Button>
+                Assinar Plano Anual
+              </SubscribeButton>
             </CardContent>
           </Card>
         </div>
