@@ -95,14 +95,26 @@ const Dashboard = () => {
         }
 
         if (trialExpired) {
-          // Verificar se tem assinatura ativa
-          const { data: subscription } = await supabase
+          // Atualiza status de assinatura a partir da Stripe antes de decidir
+          try {
+            await supabase.functions.invoke("check-subscription");
+          } catch (err) {
+            console.error("Erro ao atualizar assinatura:", err);
+          }
+
+          // Verificar se tem assinatura ativa no banco após atualização
+          const { data: subscription, error: subError } = await supabase
             .from('subscribers')
             .select('subscribed')
             .eq('user_id', userInfo.user_uuid)
-            .single();
+            .maybeSingle();
 
-          if (!subscription?.subscribed) {
+          if (subError) {
+            console.error("Erro ao buscar assinatura:", subError);
+          }
+
+          // Só redireciona se soubermos explicitamente que NÃO está assinante
+          if (subscription && !subscription.subscribed) {
             toast({
               title: "Período de teste expirado",
               description: "Seu período de teste de 30 dias expirou. Escolha um plano para continuar usando o dashboard.",
