@@ -6,6 +6,7 @@ import { useSubscription } from "@/hooks/use-subscription";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
+import { CancelSubscriptionButton } from "./CancelSubscriptionButton";
 
 export const SubscriptionStatus = () => {
   const { subscribed, subscription_tier, subscription_end, isTrialActive, isLoading, hasAccess } = useSubscription();
@@ -75,12 +76,15 @@ export const SubscriptionStatus = () => {
     return (
       <Card className="mb-6 border-green-200 bg-green-50/50">
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Crown className="h-5 w-5 text-green-600" />
-            <span>Assinatura Ativa</span>
-            <Badge variant="secondary" className="bg-green-100 text-green-800">
-              {subscription_tier || "Premium"}
-            </Badge>
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Crown className="h-5 w-5 text-green-600" />
+              <span>Assinatura Ativa</span>
+              <Badge variant="secondary" className="bg-green-100 text-green-800">
+                {subscription_tier || "Premium"}
+              </Badge>
+            </div>
+            <CancelSubscriptionButton />
           </CardTitle>
         </CardHeader>
         <CardContent>
