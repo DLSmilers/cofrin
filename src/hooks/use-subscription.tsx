@@ -56,9 +56,13 @@ export const useSubscription = () => {
         .eq('user_id', session.user.id)
         .single();
 
-      const isTrialActive = profileData?.trial_end_date 
+      // Fallback via RPC in case profile row doesn't have trial_end_date yet
+      const { data: trialExpiredRpc } = await supabase
+        .rpc('check_trial_expired', { user_uuid: session.user.id });
+
+      const isTrialActive = profileData?.trial_end_date
         ? new Date(profileData.trial_end_date) > new Date()
-        : false;
+        : (typeof trialExpiredRpc === 'boolean' ? !trialExpiredRpc : false);
 
       setStatus({
         subscribed: subscriptionData?.subscribed || false,
