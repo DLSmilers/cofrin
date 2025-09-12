@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { CancelSubscriptionButton } from "./CancelSubscriptionButton";
+import { StripeDebugButton } from "./StripeDebugButton";
 
 export const SubscriptionStatus = () => {
   const { subscribed, subscription_tier, subscription_end, isTrialActive, isLoading, hasAccess } = useSubscription();
@@ -84,7 +85,10 @@ export const SubscriptionStatus = () => {
                 {subscription_tier || "Premium"}
               </Badge>
             </div>
-            <CancelSubscriptionButton />
+            <div className="flex items-center gap-2">
+              <StripeDebugButton />
+              <CancelSubscriptionButton />
+            </div>
           </CardTitle>
         </CardHeader>
         <CardContent>
