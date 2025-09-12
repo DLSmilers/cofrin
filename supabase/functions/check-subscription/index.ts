@@ -27,6 +27,16 @@ serve(async (req) => {
   try {
     logStep("Function started");
 
+    // MODO TESTE: Forçar resposta como não assinante
+    const testMode = Deno.env.get("TEST_NO_SUBSCRIPTION");
+    if (testMode === "true") {
+      logStep("TEST MODE: Forcing no subscription");
+      return new Response(JSON.stringify({ subscribed: false }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      });
+    }
+
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeKey) {
       logStep("ERROR: STRIPE_SECRET_KEY is not set");
