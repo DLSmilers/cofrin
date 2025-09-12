@@ -4,10 +4,32 @@ import { Badge } from "@/components/ui/badge";
 import { Crown, Calendar, CreditCard } from "lucide-react";
 import { useSubscription } from "@/hooks/use-subscription";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState } from "react";
 
 export const SubscriptionStatus = () => {
   const { subscribed, subscription_tier, subscription_end, isTrialActive, isLoading, hasAccess } = useSubscription();
   const navigate = useNavigate();
+  const [trialEndDate, setTrialEndDate] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchTrialDate = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('trial_end_date')
+          .eq('user_id', session.user.id)
+          .single();
+        
+        if (data?.trial_end_date) {
+          setTrialEndDate(data.trial_end_date);
+        }
+      }
+    };
+    
+    fetchTrialDate();
+  }, []);
 
   if (isLoading) {
     return (
@@ -88,13 +110,29 @@ export const SubscriptionStatus = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground mb-4">
-            Você está no período de teste gratuito. Assine um plano para continuar após o vencimento.
-          </p>
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              Você está no período de teste gratuito. Assine um plano para continuar após o vencimento.
+            </p>
+            {trialEndDate && (
+              <div className="flex items-center space-x-2 text-sm text-blue-700 bg-blue-100 rounded-lg p-2">
+                <Calendar className="h-4 w-4" />
+                <span>
+                  <strong>Teste expira em:</strong> {new Date(trialEndDate).toLocaleDateString("pt-BR", {
+                    day: "2-digit",
+                    month: "2-digit", 
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit"
+                  })}
+                </span>
+              </div>
+            )}
+          </div>
           <Button 
             variant="outline"
             onClick={() => navigate("/pricing")}
-            className="w-full border-blue-600 text-blue-600 hover:bg-blue-50"
+            className="w-full mt-4 border-blue-600 text-blue-600 hover:bg-blue-50"
           >
             Ver Planos de Assinatura
           </Button>

@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Check, Loader2 } from "lucide-react";
+import { Check, Loader2, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +12,23 @@ const Pricing = () => {
     annual: false
   });
   const navigate = useNavigate();
+  const [userDashboardToken, setUserDashboardToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUserDashboardToken = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        const { data: userData } = await supabase
+          .rpc('validate_dashboard_token', { token_input: session.user.id });
+        
+        if (userData && userData.length > 0) {
+          setUserDashboardToken(session.user.id);
+        }
+      }
+    };
+    
+    fetchUserDashboardToken();
+  }, []);
 
   const handleSubscribe = async (priceType: "monthly" | "annual") => {
     setLoading(prev => ({ ...prev, [priceType]: true }));
@@ -55,6 +72,19 @@ const Pricing = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto py-16 px-4">
+        {userDashboardToken && (
+          <div className="mb-8">
+            <Button 
+              variant="outline" 
+              onClick={() => navigate(`/dashboard/${userDashboardToken}`)}
+              className="flex items-center space-x-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span>Voltar ao Dashboard</span>
+            </Button>
+          </div>
+        )}
+        
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4">
             Seu período de teste expirou
