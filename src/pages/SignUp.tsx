@@ -8,11 +8,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { PiggyBank, User, Calendar, MapPin, Phone } from "lucide-react";
+import { EmailConfirmationDialog } from "@/components/auth/EmailConfirmationDialog";
 
 const SignUp = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -116,12 +119,9 @@ const SignUp = () => {
           });
         }
       } else {
-        toast({
-          title: "Conta criada com sucesso!",
-          description: "Verifique seu email para confirmar sua conta e começar seu teste gratuito de 30 dias.",
-        });
-        // Redirect to dashboard using user ID as token
-        navigate(`/dashboard/${data.user?.id}`);
+        // Sucesso - mostrar tela de confirmação
+        setUserEmail(formData.email);
+        setShowEmailConfirmation(true);
       }
     } catch (err) {
       toast({
@@ -133,6 +133,15 @@ const SignUp = () => {
       setLoading(false);
     }
   };
+
+  const handleBackToLogin = () => {
+    navigate("/auth");
+  };
+
+  // Se deve mostrar a tela de confirmação de email
+  if (showEmailConfirmation) {
+    return <EmailConfirmationDialog email={userEmail} onBackToLogin={handleBackToLogin} />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-accent/20 py-8">
