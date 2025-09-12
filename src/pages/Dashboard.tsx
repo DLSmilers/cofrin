@@ -113,8 +113,8 @@ const Dashboard = () => {
             console.error("Erro ao buscar assinatura:", subError);
           }
 
-          // Só redireciona se soubermos explicitamente que NÃO está assinante
-          if (subscription && !subscription.subscribed) {
+          // Redireciona se NÃO houver registro OU se vier explicitamente como não assinante
+          if (!subscription || !subscription.subscribed) {
             toast({
               title: "Período de teste expirado",
               description: "Seu período de teste de 30 dias expirou. Escolha um plano para continuar usando o dashboard.",
