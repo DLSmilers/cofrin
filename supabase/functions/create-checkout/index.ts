@@ -61,8 +61,8 @@ serve(async (req) => {
 
     // Create checkout session
     const session = await stripe.checkout.sessions.create({
-      customer: customerId,
-      customer_email: customerId ? undefined : user.email,
+      ...(customerId ? { customer: customerId } : {}),
+      ...(customerId ? {} : { customer_email: user.email, customer_creation: 'always' }),
       line_items: [
         {
           price_data: {
@@ -82,10 +82,7 @@ serve(async (req) => {
       mode: "subscription",
       payment_method_types: ["card"],
       billing_address_collection: "required",
-      customer_update: {
-        address: "auto",
-        name: "auto",
-      },
+      ...(customerId ? { customer_update: { address: "auto", name: "auto" } } : {}),
       success_url: `${req.headers.get("origin")}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.headers.get("origin")}/pricing`,
       metadata: {
