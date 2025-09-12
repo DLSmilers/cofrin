@@ -49,14 +49,21 @@ serve(async (req) => {
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
 
-    // Check if customer exists
+    // Check if customer exists or create a new one in Test mode
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
-    let customerId;
+    let customerId: string | undefined;
     if (customers.data.length > 0) {
       customerId = customers.data[0].id;
       logStep("Existing customer found", { customerId });
     } else {
-      logStep("No existing customer found");
+      logStep("No existing customer found - creating one");
+      const created = await stripe.customers.create({
+        email: user.email,
+        name: `${user.user_metadata?.first_name ?? ""} ${user.user_metadata?.last_name ?? ""}`.trim() || undefined,
+        metadata: { user_id: user.id }
+      });
+      customerId = created.id;
+      logStep("Customer created", { customerId });
     }
 
     // Create checkout session
