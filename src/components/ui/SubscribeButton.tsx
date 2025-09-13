@@ -18,15 +18,23 @@ export const SubscribeButton = ({ priceType, amount, interval, children, classNa
 
   useEffect(() => {
     // Escuta mensagens da aba de pagamento
-    const handleMessage = (event: MessageEvent) => {
+    const handleMessage = async (event: MessageEvent) => {
       if (event.data.type === 'PAYMENT_SUCCESS') {
         toast({
           title: "Pagamento aprovado!",
           description: "Sua assinatura foi ativada com sucesso.",
         });
-        // Aguarda um pouco e navega para o dashboard
+        
+        // Pega o token do usuário e redireciona para o dashboard específico
+        const { data: { session } } = await supabase.auth.getSession();
+        const userToken = session?.user?.id;
+        
         setTimeout(() => {
-          navigate("/dashboard-access");
+          if (userToken) {
+            navigate(`/dashboard/${userToken}`);
+          } else {
+            navigate("/dashboard-access");
+          }
         }, 1000);
       }
     };
