@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
+import { SystemLogs } from "@/components/admin/SystemLogs";
 import { 
   Users, 
   Trash2, 
@@ -16,7 +17,8 @@ import {
   Calendar,
   DollarSign,
   AlertTriangle,
-  ArrowLeft
+  ArrowLeft,
+  FileText
 } from "lucide-react";
 import { format } from "date-fns";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -223,10 +225,14 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="users" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="users" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
               Usuários
+            </TabsTrigger>
+            <TabsTrigger value="system-logs" className="flex items-center gap-2">
+              <FileText className="h-4 w-4" />
+              Logs do Sistema
             </TabsTrigger>
             <TabsTrigger value="logs" className="flex items-center gap-2">
               <Activity className="h-4 w-4" />
@@ -333,6 +339,11 @@ const Admin = () => {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Tab de Logs do Sistema */}
+          <TabsContent value="system-logs">
+            <SystemLogs />
           </TabsContent>
 
           {/* Tab de Logs de Acesso */}

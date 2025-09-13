@@ -218,6 +218,25 @@ const Dashboard = () => {
 
         // Buscar meta do mês atual
         await fetchMetaForCurrentPeriod();
+
+        // Registrar log de acesso ao dashboard
+        try {
+          const { error: logError } = await supabase.rpc('log_user_action', {
+            p_user_id: userInfo.user_uuid,
+            p_action: 'dashboard_access',
+            p_details: {
+              source: 'dashboard_url',
+              user_agent: navigator.userAgent,
+              timestamp: new Date().toISOString()
+            }
+          });
+          
+          if (logError) {
+            console.error("Erro ao registrar log de acesso:", logError);
+          }
+        } catch (logError) {
+          console.error("Erro ao registrar log de acesso:", logError);
+        }
       } catch (error) {
         console.error("Erro geral:", error);
         toast({
