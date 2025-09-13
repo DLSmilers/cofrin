@@ -150,19 +150,7 @@ const SignUp = () => {
           });
         }
       } else {
-        // Enviar email de boas-vindas personalizado
-        try {
-          await supabase.functions.invoke('send-welcome-email', {
-            body: {
-              to: formData.email,
-              firstName: formData.firstName,
-              confirmationUrl: redirectUrl
-            }
-          });
-        } catch (emailError) {
-          console.error("Erro ao enviar email de boas-vindas:", emailError);
-          // Não bloquear o fluxo se o email falhar
-        }
+        // Email personalizado será enviado automaticamente via webhook
 
         // Sucesso - mostrar tela de confirmação
         setUserEmail(formData.email);

@@ -1,28 +1,41 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
+import { Webhook } from "https://esm.sh/standardwebhooks@1.0.0";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
-
-interface WelcomeEmailRequest {
-  to: string;
-  firstName: string;
-  confirmationUrl: string;
-}
+const hookSecret = Deno.env.get("SEND_EMAIL_HOOK_SECRET") as string;
 
 const handler = async (req: Request): Promise<Response> => {
-  // Handle CORS preflight requests
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+  if (req.method !== 'POST') {
+    return new Response('not allowed', { status: 400 });
   }
 
   try {
-    const { to, firstName, confirmationUrl }: WelcomeEmailRequest = await req.json();
+    // Verify webhook signature
+    const payload = await req.text();
+    const headers = Object.fromEntries(req.headers);
+    const wh = new Webhook(hookSecret);
+    
+    const {
+      user,
+      email_data: { token, token_hash, redirect_to, email_action_type },
+    } = wh.verify(payload, headers) as {
+      user: {
+        email: string;
+        user_metadata: {
+          first_name?: string;
+        };
+      };
+      email_data: {
+        token: string;
+        token_hash: string;
+        redirect_to: string;
+        email_action_type: string;
+      };
+    };
+
+    const firstName = user.user_metadata?.first_name || "Usuário";
+    const confirmationUrl = `${Deno.env.get("SUPABASE_URL")}/auth/v1/verify?token=${token_hash}&type=${email_action_type}&redirect_to=${redirect_to}`;
 
     const htmlContent = `
       <!DOCTYPE html>
@@ -201,32 +214,39 @@ const handler = async (req: Request): Promise<Response> => {
       </html>
     `;
 
-    const emailResponse = await resend.emails.send({
+    const { error } = await resend.emails.send({
       from: "Cofrin - Bem-vindo <noreply@xn--automatiza-t8a.com>",
-      to: [to],
+      to: [user.email],
       subject: `🐷 Bem-vindo ao Cofrin, ${firstName}! Confirme seu email`,
       html: htmlContent,
     });
 
-    console.log("Welcome email sent successfully:", emailResponse);
+    if (error) {
+      throw error;
+    }
 
-    return new Response(JSON.stringify(emailResponse), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-        ...corsHeaders,
-      },
-    });
+    console.log("Welcome email sent successfully via webhook");
+
   } catch (error: any) {
     console.error("Error in send-welcome-email function:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({
+        error: {
+          http_code: error.code,
+          message: error.message,
+        },
+      }),
       {
-        status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+        status: 401,
+        headers: { "Content-Type": "application/json" },
       }
     );
   }
+
+  return new Response(JSON.stringify({}), {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  });
 };
 
 serve(handler);
