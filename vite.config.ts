@@ -19,6 +19,7 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
       react: path.resolve(__dirname, "node_modules/react"),
       "react-dom": path.resolve(__dirname, "node_modules/react-dom"),
+      "@radix-ui/react-tooltip": path.resolve(__dirname, "./src/stubs/radix-tooltip"),
     },
     dedupe: ["react", "react-dom", "react/jsx-runtime"],
   },
