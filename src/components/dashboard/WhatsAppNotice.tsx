@@ -16,34 +16,12 @@ export const WhatsAppNotice = () => {
 
   const handleWhatsAppClick = () => {
     const phoneNumber = "5571829998471";
-    const message = "Olá! Vim do dashboard financeiro e gostaria de obter ajuda para preencher os dados.";
+    const message = "oi, gostaria de economizar com o cofrin.";
     
-    // Tentar múltiplas abordagens para WhatsApp
-    const whatsappUrls = [
-      `https://web.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`,
-      `whatsapp://send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`,
-      `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`
-    ];
+    // Usar o formato wa.me que é mais confiável
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     
-    // Tentar abrir cada URL até uma funcionar
-    let opened = false;
-    whatsappUrls.forEach((url, index) => {
-      if (!opened) {
-        try {
-          window.open(url, '_blank');
-          opened = true;
-        } catch (error) {
-          console.log(`Tentativa ${index + 1} falhou:`, error);
-        }
-      }
-    });
-    
-    // Fallback: copiar número para clipboard
-    if (!opened) {
-      navigator.clipboard.writeText("+55 71 8299-8471").then(() => {
-        alert("Número copiado para a área de transferência: +55 71 8299-8471");
-      });
-    }
+    window.open(whatsappUrl, '_blank');
   };
 
   const handleDismiss = () => {
