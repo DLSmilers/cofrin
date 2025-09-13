@@ -13,6 +13,7 @@ import { TransactionsList } from "@/components/dashboard/TransactionsList";
 import { ParceledPaymentsList } from "@/components/dashboard/ParceledPaymentsList";
 import { AddTransactionDialog } from "@/components/dashboard/AddTransactionDialog";
 import { MetaChartWithFilter } from "@/components/dashboard/MetaChartWithFilter";
+import { GoalTypeFilter } from "@/components/dashboard/GoalTypeFilter";
 import { ExportButton } from "@/components/dashboard/ExportButton";
 import { TimeFilter } from "@/components/dashboard/TimeFilter";
 import { SubscriptionStatus } from "@/components/dashboard/SubscriptionStatus";
@@ -86,6 +87,7 @@ const Dashboard = () => {
   const [timeFilter, setTimeFilter] = useState<TimeFilterType>("month");
   const [customDateRange, setCustomDateRange] = useState<{start?: Date; end?: Date}>({});
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
+  const [goalView, setGoalView] = useState<"mensal" | "semanal">("mensal");
 
   useEffect(() => {
     if (!dashboard_token) {
@@ -441,9 +443,16 @@ const Dashboard = () => {
             <CategoryChart transactions={filteredTransactions} />
           </div>
         </div>
+        {/* Filtro de Tipo de Meta (sempre visível) */}
+        <GoalTypeFilter selectedType={goalView} onTypeChange={setGoalView} />
 
-        {/* Meta Chart with Internal Filter */}
-        <MetaChartWithFilter meta={meta} userWhatsapp={user.user_whatsapp} />
+        {/* Meta Chart com filtro controlado */}
+        <MetaChartWithFilter 
+          meta={meta} 
+          userWhatsapp={user.user_whatsapp}
+          externalViewType={goalView}
+          onViewTypeChange={setGoalView}
+        />
 
         {/* Pagamentos Parcelados */}
         <ParceledPaymentsList userWhatsapp={user.user_whatsapp} />

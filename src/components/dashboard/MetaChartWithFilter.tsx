@@ -24,10 +24,17 @@ interface Meta {
 interface MetaChartWithFilterProps {
   meta: Meta | null;
   userWhatsapp: string;
+  externalViewType?: "mensal" | "semanal";
+  onViewTypeChange?: (type: "mensal" | "semanal") => void;
 }
 
-export const MetaChartWithFilter = ({ meta, userWhatsapp }: MetaChartWithFilterProps) => {
+export const MetaChartWithFilter = ({ meta, userWhatsapp, externalViewType, onViewTypeChange }: MetaChartWithFilterProps) => {
   const [viewType, setViewType] = useState<"mensal" | "semanal">("mensal");
+  const effectiveView = externalViewType ?? viewType;
+  const setView = (t: "mensal" | "semanal") => {
+    if (onViewTypeChange) onViewTypeChange(t);
+    else setViewType(t);
+  };
   const [weeklyMeta, setWeeklyMeta] = useState<Meta | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -76,13 +83,13 @@ export const MetaChartWithFilter = ({ meta, userWhatsapp }: MetaChartWithFilterP
   };
 
   useEffect(() => {
-    if (viewType === "semanal") {
+    if (effectiveView === "semanal") {
       fetchWeeklyMeta();
     }
-  }, [viewType, userWhatsapp]);
+  }, [effectiveView, userWhatsapp]);
 
-  const currentMeta = viewType === "mensal" ? meta : weeklyMeta;
-  const isMonthly = viewType === "mensal";
+  const currentMeta = effectiveView === "mensal" ? meta : weeklyMeta;
+  const isMonthly = effectiveView === "mensal";
 
   console.log("MetaChartWithFilter Debug:", {
     viewType,
@@ -106,18 +113,18 @@ export const MetaChartWithFilter = ({ meta, userWhatsapp }: MetaChartWithFilterP
         </CardTitle>
         <div className="flex gap-2">
           <Button
-            variant={viewType === "mensal" ? "default" : "outline"}
+            variant={effectiveView === "mensal" ? "default" : "outline"}
             size="sm"
-            onClick={() => setViewType("mensal")}
+            onClick={() => setView("mensal")}
             className="flex items-center gap-2"
           >
             <Calendar className="h-4 w-4" />
             Mensal
           </Button>
           <Button
-            variant={viewType === "semanal" ? "default" : "outline"}
+            variant={effectiveView === "semanal" ? "default" : "outline"}
             size="sm"
-            onClick={() => setViewType("semanal")}
+            onClick={() => setView("semanal")}
             className="flex items-center gap-2"
           >
             <Target className="h-4 w-4" />
