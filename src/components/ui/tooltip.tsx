@@ -1,47 +1,24 @@
 import * as React from "react"
 
-interface TooltipProps {
-  children: React.ReactNode
-}
+// No-op tooltip stubs to avoid runtime issues with duplicate React during development
+// They render children without activating Radix logic.
 
-interface TooltipProviderProps {
-  children: React.ReactNode
-  delayDuration?: number
-}
+type ProviderProps = { children?: React.ReactNode }
 
-interface TooltipTriggerProps {
-  children: React.ReactNode
+const TooltipProvider: React.FC<ProviderProps> = ({ children }) => <>{children}</>
+
+const Tooltip: React.FC<ProviderProps> = ({ children }) => <>{children}</>
+
+interface TriggerProps {
+  children?: React.ReactNode
   asChild?: boolean
-}
-
-interface TooltipContentProps {
-  children: React.ReactNode
-  side?: "top" | "right" | "bottom" | "left"
-  align?: "start" | "center" | "end"
-  className?: string
-  hidden?: boolean
   [key: string]: any
 }
 
-const TooltipProvider = ({ children }: TooltipProviderProps) => {
-  return <>{children}</>
-}
+const TooltipTrigger = React.forwardRef<any, TriggerProps>(({ children }, _ref) => <>{children}</>)
+TooltipTrigger.displayName = "TooltipTrigger"
 
-const Tooltip = ({ children }: TooltipProps) => {
-  return <>{children}</>
-}
+const TooltipContent = React.forwardRef<HTMLDivElement, { [key: string]: any }>(() => null)
+TooltipContent.displayName = "TooltipContent"
 
-const TooltipTrigger = ({ children }: TooltipTriggerProps) => {
-  return <>{children}</>
-}
-
-const TooltipContent = ({ children }: TooltipContentProps) => {
-  return <>{children}</>
-}
-
-export {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-  TooltipProvider,
-}
+export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider }

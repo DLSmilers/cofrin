@@ -17,16 +17,13 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      "react": path.resolve(__dirname, "./node_modules/react"),
-      "react-dom": path.resolve(__dirname, "./node_modules/react-dom"),
-      "react/jsx-runtime": path.resolve(__dirname, "./node_modules/react/jsx-runtime"),
-      "next-themes": path.resolve(__dirname, "./node_modules/next-themes"),
+      react: path.resolve(__dirname, "node_modules/react"),
+      "react-dom": path.resolve(__dirname, "node_modules/react-dom"),
+      "@radix-ui/react-tooltip": path.resolve(__dirname, "./src/stubs/radix-tooltip"),
     },
-    dedupe: ["react", "react-dom", "react/jsx-runtime", "next-themes"],
+    dedupe: ["react", "react-dom", "react/jsx-runtime"],
   },
   optimizeDeps: {
-    include: ["react", "react-dom", "react/jsx-runtime", "next-themes"],
-    force: true,
     exclude: ["@radix-ui/react-tooltip"],
   },
 }));

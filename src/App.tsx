@@ -1,4 +1,6 @@
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
@@ -12,12 +14,18 @@ import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentSuccessClose from "./pages/PaymentSuccessClose";
 import Admin from "./pages/Admin";
 import Settings from "./pages/Settings";
+import { InstallPrompt } from "./components/pwa/InstallPrompt";
+import { OfflineIndicator } from "./components/ui/offline-indicator";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
+    <>
+      <Toaster />
+      <Sonner />
+      <InstallPrompt />
+      <OfflineIndicator />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Marketing />} />
@@ -34,7 +42,7 @@ const App = () => (
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
-    </TooltipProvider>
+    </>
   </QueryClientProvider>
 );
 
