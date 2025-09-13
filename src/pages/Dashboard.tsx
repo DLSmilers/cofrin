@@ -163,7 +163,8 @@ const Dashboard = () => {
         let transactionsData: any[] | null = null;
         let transactionsError: any = null;
         
-        console.log("🔍 Buscando transações para user_whatsapp:", userInfo.user_whatsapp);
+        console.log("🔍🔍🔍 BUSCANDO TRANSAÇÕES PARA:", userInfo.user_whatsapp);
+        console.log("🔍🔍🔍 URL COMPLETA:", `https://rliefaciadhxjjynuyod.supabase.co/rest/v1/transacoes?user_whatsapp=eq.${encodeURIComponent(userInfo.user_whatsapp)}&order=created_at.desc`);
         
         // Fazer fetch usando um approach mais simples para evitar problemas de tipos
         const response = await fetch(
@@ -179,9 +180,10 @@ const Dashboard = () => {
         
         if (response.ok) {
           transactionsData = await response.json();
-          console.log("✅ Transações encontradas:", transactionsData?.length || 0, transactionsData);
+          console.log("✅✅✅ TRANSAÇÕES ENCONTRADAS:", transactionsData?.length || 0);
+          console.log("✅✅✅ DADOS DAS TRANSAÇÕES:", transactionsData);
         } else {
-          console.error("❌ Erro na resposta da API:", response.status, response.statusText);
+          console.error("❌❌❌ ERRO NA RESPOSTA DA API:", response.status, response.statusText);
           transactionsError = { message: 'Erro ao buscar transações' };
         }
 
