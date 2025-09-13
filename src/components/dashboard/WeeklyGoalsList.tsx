@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Target, Calendar, TrendingUp, Trash2 } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { WeeklyGoalDialog } from "./WeeklyGoalDialog";
 
 interface WeeklyGoal {
   id: number;
@@ -17,7 +18,11 @@ interface WeeklyGoal {
   created_at: string;
 }
 
-export const WeeklyGoalsList = () => {
+interface WeeklyGoalsListProps {
+  showCreateButton?: boolean;
+}
+
+export const WeeklyGoalsList = ({ showCreateButton = true }: WeeklyGoalsListProps) => {
   const [goals, setGoals] = useState<WeeklyGoal[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
@@ -108,48 +113,35 @@ export const WeeklyGoalsList = () => {
 
   if (isLoading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Target className="h-5 w-5" />
-            Metas Semanais
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-8">Carregando metas...</div>
-        </CardContent>
-      </Card>
+      <div className="text-center py-8">Carregando metas...</div>
     );
   }
 
   if (goals.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Target className="h-5 w-5" />
-            Metas Semanais
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-8">
-            <Target className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-            <p className="text-muted-foreground">Nenhuma meta semanal criada ainda</p>
+      <div className="space-y-4">
+        {showCreateButton && (
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold">Metas Semanais</h3>
+            <WeeklyGoalDialog onGoalCreated={fetchWeeklyGoals} />
           </div>
-        </CardContent>
-      </Card>
+        )}
+        <div className="text-center py-8">
+          <Target className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+          <p className="text-muted-foreground">Nenhuma meta semanal criada ainda</p>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Target className="h-5 w-5" />
-          Metas Semanais
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+    <div className="space-y-4">
+      {showCreateButton && (
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold">Metas Semanais</h3>
+          <WeeklyGoalDialog onGoalCreated={fetchWeeklyGoals} />
+        </div>
+      )}
         <div className="space-y-4">
           {goals.map((goal) => {
             const percentage = goal.meta_mensal > 0 ? (goal.gasto_total / goal.meta_mensal) * 100 : 0;
@@ -212,7 +204,6 @@ export const WeeklyGoalsList = () => {
             );
           })}
         </div>
-      </CardContent>
-    </Card>
+    </div>
   );
 };

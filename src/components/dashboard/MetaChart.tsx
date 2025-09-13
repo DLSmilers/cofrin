@@ -1,8 +1,13 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from "recharts";
-import { Target, TrendingUp, TrendingDown } from "lucide-react";
+import { Target, TrendingUp, TrendingDown, Calendar, CalendarDays } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { WeeklyGoalsList } from "./WeeklyGoalsList";
+import { WeeklyGoalDialog } from "./WeeklyGoalDialog";
 
 interface Meta {
   id: number;
@@ -18,6 +23,7 @@ interface MetaChartProps {
 }
 
 export const MetaChart = ({ meta }: MetaChartProps) => {
+  const [showWeeklyGoals, setShowWeeklyGoals] = useState(false);
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("pt-BR", {
       style: "currency",
@@ -25,23 +31,44 @@ export const MetaChart = ({ meta }: MetaChartProps) => {
     }).format(value);
   };
 
-  if (!meta) {
+  if (!meta && !showWeeklyGoals) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Target className="h-5 w-5" />
-            Meta Mensal
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="overflow-hidden p-3 sm:p-6">
-          <div className="h-[200px] sm:h-[250px] flex items-center justify-center">
-            <div className="text-center space-y-2">
-              <Target className="h-12 w-12 mx-auto text-muted-foreground/50" />
-              <p className="text-muted-foreground">Nenhuma meta encontrada</p>
-              <p className="text-sm text-muted-foreground">Defina uma meta para acompanhar seu progresso</p>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <Target className="h-5 w-5" />
+              {showWeeklyGoals ? "Metas Semanais" : "Meta Mensal"}
+            </CardTitle>
+            <div className="flex items-center space-x-2">
+              <Label htmlFor="meta-switch" className="text-sm">
+                <Calendar className="h-4 w-4 inline mr-1" />
+                Mensal
+              </Label>
+              <Switch 
+                id="meta-switch" 
+                checked={showWeeklyGoals} 
+                onCheckedChange={setShowWeeklyGoals}
+              />
+              <Label htmlFor="meta-switch" className="text-sm">
+                <CalendarDays className="h-4 w-4 inline mr-1" />
+                Semanal
+              </Label>
             </div>
           </div>
+        </CardHeader>
+        <CardContent className="overflow-hidden p-3 sm:p-6">
+          {showWeeklyGoals ? (
+            <WeeklyGoalsList showCreateButton={false} />
+          ) : (
+            <div className="h-[200px] sm:h-[250px] flex items-center justify-center">
+              <div className="text-center space-y-2">
+                <Target className="h-12 w-12 mx-auto text-muted-foreground/50" />
+                <p className="text-muted-foreground">Nenhuma meta encontrada</p>
+                <p className="text-sm text-muted-foreground">Defina uma meta para acompanhar seu progresso</p>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
     );
@@ -72,13 +99,68 @@ export const MetaChart = ({ meta }: MetaChartProps) => {
     },
   };
 
+  // Se estiver mostrando metas semanais, renderiza apenas a lista
+  if (showWeeklyGoals) {
+    return (
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <CalendarDays className="h-5 w-5" />
+              Metas Semanais
+            </CardTitle>
+            <div className="flex items-center space-x-2">
+              <Label htmlFor="meta-switch" className="text-sm">
+                <Calendar className="h-4 w-4 inline mr-1" />
+                Mensal
+              </Label>
+              <Switch 
+                id="meta-switch" 
+                checked={showWeeklyGoals} 
+                onCheckedChange={setShowWeeklyGoals}
+              />
+              <Label htmlFor="meta-switch" className="text-sm">
+                <CalendarDays className="h-4 w-4 inline mr-1" />
+                Semanal
+              </Label>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="overflow-hidden p-3 sm:p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold">Metas Semanais</h3>
+            <WeeklyGoalDialog onGoalCreated={() => window.location.reload()} />
+          </div>
+          <WeeklyGoalsList showCreateButton={false} />
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Target className="h-5 w-5" />
-          Meta Mensal - {meta.mes_ano}
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <Target className="h-5 w-5" />
+            Meta Mensal - {meta.mes_ano}
+          </CardTitle>
+          <div className="flex items-center space-x-2">
+            <Label htmlFor="meta-switch" className="text-sm">
+              <Calendar className="h-4 w-4 inline mr-1" />
+              Mensal
+            </Label>
+            <Switch 
+              id="meta-switch" 
+              checked={showWeeklyGoals} 
+              onCheckedChange={setShowWeeklyGoals}
+            />
+            <Label htmlFor="meta-switch" className="text-sm">
+              <CalendarDays className="h-4 w-4 inline mr-1" />
+              Semanal
+            </Label>
+          </div>
+        </div>
       </CardHeader>
       <CardContent className="overflow-hidden p-3 sm:p-6">
         <div className="space-y-4">

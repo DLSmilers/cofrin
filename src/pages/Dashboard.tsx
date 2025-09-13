@@ -424,15 +424,6 @@ const Dashboard = () => {
         {/* Meta Chart */}
         <MetaChart meta={meta} />
 
-        {/* Metas Semanais */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold">Metas Semanais</h2>
-            <WeeklyGoalDialog onGoalCreated={() => window.location.reload()} />
-          </div>
-          <WeeklyGoalsList />
-        </div>
-
         {/* Pagamentos Parcelados */}
         <ParceledPaymentsList userWhatsapp={user.user_whatsapp} />
 
