@@ -23,4 +23,7 @@ export default defineConfig(({ mode }) => ({
     },
     dedupe: ["react", "react-dom", "react/jsx-runtime"],
   },
+  optimizeDeps: {
+    exclude: ["@radix-ui/react-tooltip"],
+  },
 }));
