@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Shield, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { PWABadge } from "@/components/pwa/PWABadge";
 
 interface DashboardHeaderProps {
   userName: string;
@@ -42,6 +43,7 @@ export const DashboardHeader = ({ userName, isAdmin }: DashboardHeaderProps) => 
                 Painel Admin
               </Button>
             )}
+            <PWABadge />
             <Badge variant="secondary" className="bg-white/20 text-primary-foreground border-0">
               Financeiro
             </Badge>

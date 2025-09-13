@@ -14,6 +14,8 @@ import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentSuccessClose from "./pages/PaymentSuccessClose";
 import Admin from "./pages/Admin";
 import Settings from "./pages/Settings";
+import { InstallPrompt } from "./components/pwa/InstallPrompt";
+import { OfflineIndicator } from "./components/ui/offline-indicator";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +24,8 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <InstallPrompt />
+      <OfflineIndicator />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Marketing />} />
