@@ -84,37 +84,67 @@ export const MetaChartWithFilter = ({ meta, userWhatsapp }: MetaChartWithFilterP
   const currentMeta = viewType === "mensal" ? meta : weeklyMeta;
   const isMonthly = viewType === "mensal";
 
-  if (!currentMeta && !isLoading) {
+  console.log("MetaChartWithFilter Debug:", {
+    viewType,
+    meta,
+    weeklyMeta,
+    currentMeta,
+    isLoading,
+    userWhatsapp
+  });
+
+  // Renderizar o header com botões sempre
+  const renderHeader = () => (
+    <CardHeader>
+      <div className="flex items-center justify-between">
+        <CardTitle className="flex items-center gap-2">
+          <Target className="h-5 w-5" />
+          {currentMeta ? 
+            (isMonthly ? `Meta Mensal - ${currentMeta.mes_ano}` : `Meta Semanal - ${currentMeta.semana_ano}`) :
+            (isMonthly ? "Meta Mensal" : "Meta Semanal")
+          }
+        </CardTitle>
+        <div className="flex gap-2">
+          <Button
+            variant={viewType === "mensal" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setViewType("mensal")}
+            className="flex items-center gap-2"
+          >
+            <Calendar className="h-4 w-4" />
+            Mensal
+          </Button>
+          <Button
+            variant={viewType === "semanal" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setViewType("semanal")}
+            className="flex items-center gap-2"
+          >
+            <Target className="h-4 w-4" />
+            Semanal
+          </Button>
+        </div>
+      </div>
+    </CardHeader>
+  );
+
+  // Se está carregando
+  if (isLoading) {
     return (
       <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <Target className="h-5 w-5" />
-              {isMonthly ? "Meta Mensal" : "Meta Semanal"}
-            </CardTitle>
-            <div className="flex gap-2">
-              <Button
-                variant={viewType === "mensal" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setViewType("mensal")}
-                className="flex items-center gap-2"
-              >
-                <Calendar className="h-4 w-4" />
-                Mensal
-              </Button>
-              <Button
-                variant={viewType === "semanal" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setViewType("semanal")}
-                className="flex items-center gap-2"
-              >
-                <Target className="h-4 w-4" />
-                Semanal
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
+        {renderHeader()}
+        <CardContent>
+          <div className="text-center py-8">Carregando...</div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Se não tem meta
+  if (!currentMeta) {
+    return (
+      <Card>
+        {renderHeader()}
         <CardContent className="overflow-hidden p-3 sm:p-6">
           <div className="h-[200px] sm:h-[250px] flex items-center justify-center">
             <div className="text-center space-y-2">
@@ -132,46 +162,7 @@ export const MetaChartWithFilter = ({ meta, userWhatsapp }: MetaChartWithFilterP
     );
   }
 
-  if (isLoading) {
-    return (
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <Target className="h-5 w-5" />
-              Meta Semanal
-            </CardTitle>
-            <div className="flex gap-2">
-              <Button
-                variant={viewType === "mensal" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setViewType("mensal")}
-                className="flex items-center gap-2"
-              >
-                <Calendar className="h-4 w-4" />
-                Mensal
-              </Button>
-              <Button
-                variant={viewType === "semanal" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setViewType("semanal")}
-                className="flex items-center gap-2"
-              >
-                <Target className="h-4 w-4" />
-                Semanal
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-8">Carregando...</div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (!currentMeta) return null;
-
+  // Se tem meta, renderizar o gráfico completo
   const progressPercentage = Math.min((currentMeta.gasto_total / currentMeta.meta_mensal) * 100, 100);
   const remaining = currentMeta.meta_mensal - currentMeta.gasto_total;
   const isOverBudget = currentMeta.gasto_total > currentMeta.meta_mensal;
@@ -197,44 +188,9 @@ export const MetaChartWithFilter = ({ meta, userWhatsapp }: MetaChartWithFilterP
     },
   };
 
-  const getMetaTitle = () => {
-    if (isMonthly) {
-      return `Meta Mensal - ${currentMeta.mes_ano}`;
-    } else {
-      return `Meta Semanal - ${currentMeta.semana_ano}`;
-    }
-  };
-
   return (
     <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <Target className="h-5 w-5" />
-            {getMetaTitle()}
-          </CardTitle>
-          <div className="flex gap-2">
-            <Button
-              variant={viewType === "mensal" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setViewType("mensal")}
-              className="flex items-center gap-2"
-            >
-              <Calendar className="h-4 w-4" />
-              Mensal
-            </Button>
-            <Button
-              variant={viewType === "semanal" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setViewType("semanal")}
-              className="flex items-center gap-2"
-            >
-              <Target className="h-4 w-4" />
-              Semanal
-            </Button>
-          </div>
-        </div>
-      </CardHeader>
+      {renderHeader()}
       <CardContent className="overflow-hidden p-3 sm:p-6">
         <div className="space-y-4">
           {/* Estatísticas */}
