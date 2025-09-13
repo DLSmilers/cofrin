@@ -166,11 +166,12 @@ const Dashboard = () => {
         const { data: dashboardData, error: transactionsError } = await supabase
           .rpc('get_dashboard_data', { token_input: dashboard_token });
         
-        console.log("✅✅✅ RESULTADO DA BUSCA:", { 
-          data: dashboardData, 
-          error: transactionsError,
-          user_whatsapp: userInfo.user_whatsapp 
-        });
+         console.log("✅✅✅ RESULTADO DA BUSCA v2.0:", { 
+           data: dashboardData, 
+           error: transactionsError,
+           user_whatsapp: userInfo.user_whatsapp,
+           dataLength: dashboardData?.length || 0
+         });
 
         if (transactionsError) {
           console.error("❌❌❌ ERRO SUPABASE:", transactionsError);
@@ -196,9 +197,9 @@ const Dashboard = () => {
               quando: item.transaction_quando,
             }));
           
-          setTransactions(mappedTransactions);
-          console.log("🎯🎯🎯 TRANSAÇÕES MAPEADAS:", mappedTransactions);
-          // Para novos usuários sem transações, mostrar uma mensagem informativa
+           setTransactions(mappedTransactions);
+           console.log("🎯🎯🎯 TRANSAÇÕES MAPEADAS v2.0:", mappedTransactions);
+           console.log("💾 Salvando no estado:", mappedTransactions.length, "transações");
           if (!mappedTransactions || mappedTransactions.length === 0) {
             toast({
               title: "🎉 Dashboard carregado com sucesso!",
@@ -323,7 +324,7 @@ const Dashboard = () => {
   }, [transactions, timeFilter, customDateRange, selectedMonth]);
 
   const filterTransactionsByTime = () => {
-    console.log("🔍 Filtrando transações:", { 
+    console.log("🔍 Filtrando transações v2.0:", { 
       totalTransactions: transactions.length, 
       timeFilter, 
       selectedMonth: selectedMonth?.toISOString() 
@@ -380,13 +381,20 @@ const Dashboard = () => {
           setFilteredTransactions(transactions);
           return;
         }
-        break;
-      default:
-        // Por padrão, mostrar todas as transações sem filtro
-        console.log("✅ Filtro padrão, mantendo todas as transações");
-        setFilteredTransactions(transactions);
-        return;
-    }
+         break;
+       default:
+         // Por padrão, mostrar TODAS as transações sem qualquer filtro
+         console.log("✅ Filtro padrão v2.0, mantendo TODAS as transações");
+         setFilteredTransactions(transactions);
+         return;
+     }
+
+     // PROTEÇÃO: Se não há período definido adequadamente, mostrar todas as transações
+     if (!startDate) {
+       console.log("⚠️ StartDate indefinido, mantendo todas as transações");
+       setFilteredTransactions(transactions);
+       return;
+     }
 
     const filtered = transactions.filter((transaction) => {
       // Priorizar o campo 'quando' se existir, senão usar 'created_at'
