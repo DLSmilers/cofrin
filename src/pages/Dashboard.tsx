@@ -9,6 +9,9 @@ import { MetricsCards } from "@/components/dashboard/MetricsCards";
 import { ExpenseChart } from "@/components/dashboard/ExpenseChart";
 import { CategoryChart } from "@/components/dashboard/CategoryChart";
 import { TransactionsList } from "@/components/dashboard/TransactionsList";
+import { ParceledPaymentsList } from "@/components/dashboard/ParceledPaymentsList";
+import { WeeklyGoalsList } from "@/components/dashboard/WeeklyGoalsList";
+import { WeeklyGoalDialog } from "@/components/dashboard/WeeklyGoalDialog";
 import { AddTransactionDialog } from "@/components/dashboard/AddTransactionDialog";
 import { MetaChart } from "@/components/dashboard/MetaChart";
 import { ExportButton } from "@/components/dashboard/ExportButton";
@@ -418,7 +421,19 @@ const Dashboard = () => {
         {/* Meta Chart */}
         <MetaChart meta={meta} />
 
-        <TransactionsList 
+        {/* Metas Semanais */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold">Metas Semanais</h2>
+            <WeeklyGoalDialog onGoalCreated={() => window.location.reload()} />
+          </div>
+          <WeeklyGoalsList />
+        </div>
+
+        {/* Pagamentos Parcelados */}
+        <ParceledPaymentsList userWhatsapp={user.user_whatsapp} />
+
+        <TransactionsList
           transactions={filteredTransactions} 
           userWhatsapp={user.user_whatsapp}
           onTransactionDeleted={() => {
