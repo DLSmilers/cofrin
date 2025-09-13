@@ -63,6 +63,7 @@ const Admin = () => {
   const [selectedUserTransactions, setSelectedUserTransactions] = useState<UserTransaction[]>([]);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [activeTab, setActiveTab] = useState("users");
 
   // Verificar se o usuário é admin
   useEffect(() => {
@@ -178,6 +179,7 @@ const Admin = () => {
 
       setSelectedUserTransactions(transactions || []);
       setSelectedUserId(userId);
+      setActiveTab("transactions");
     } catch (error) {
       console.error("Erro ao carregar transações:", error);
       toast({
@@ -224,7 +226,7 @@ const Admin = () => {
           </p>
         </div>
 
-        <Tabs defaultValue="users" className="space-y-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="users" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
