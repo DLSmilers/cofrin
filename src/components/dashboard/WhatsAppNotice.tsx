@@ -15,13 +15,39 @@ export const WhatsAppNotice = () => {
   }, []);
 
   const handleWhatsAppClick = () => {
-    const phoneNumber = "5571829998471";
+    const phoneNumber = "5571982998471"; // Corrigindo o número
     const message = "oi, gostaria de economizar com o cofrin.";
     
-    // Usar o formato wa.me que é mais confiável
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    // Múltiplas opções de fallback
+    const whatsappOptions = [
+      `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`,
+      `whatsapp://send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`,
+      `https://web.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`
+    ];
     
-    window.open(whatsappUrl, '_blank');
+    let success = false;
+    
+    // Tentar cada opção
+    for (const url of whatsappOptions) {
+      try {
+        window.open(url, '_blank');
+        success = true;
+        break;
+      } catch (error) {
+        console.log('Tentativa falhou:', error);
+        continue;
+      }
+    }
+    
+    // Se nenhuma opção funcionou, copiar número
+    if (!success) {
+      const phoneFormatted = "+55 71 9829-98471";
+      navigator.clipboard.writeText(phoneFormatted).then(() => {
+        alert(`Número copiado: ${phoneFormatted}\nMensagem: ${message}`);
+      }).catch(() => {
+        alert(`WhatsApp: ${phoneFormatted}\nMensagem: ${message}`);
+      });
+    }
   };
 
   const handleDismiss = () => {
