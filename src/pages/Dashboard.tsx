@@ -11,11 +11,8 @@ import { ExpenseChart } from "@/components/dashboard/ExpenseChart";
 import { CategoryChart } from "@/components/dashboard/CategoryChart";
 import { TransactionsList } from "@/components/dashboard/TransactionsList";
 import { ParceledPaymentsList } from "@/components/dashboard/ParceledPaymentsList";
-import { WeeklyGoalsList } from "@/components/dashboard/WeeklyGoalsList";
-import { WeeklyGoalDialog } from "@/components/dashboard/WeeklyGoalDialog";
-import { GoalTypeFilter, GoalType } from "@/components/dashboard/GoalTypeFilter";
 import { AddTransactionDialog } from "@/components/dashboard/AddTransactionDialog";
-import { MetaChart } from "@/components/dashboard/MetaChart";
+import { MetaChartWithFilter } from "@/components/dashboard/MetaChartWithFilter";
 import { ExportButton } from "@/components/dashboard/ExportButton";
 import { TimeFilter } from "@/components/dashboard/TimeFilter";
 import { SubscriptionStatus } from "@/components/dashboard/SubscriptionStatus";
@@ -46,7 +43,9 @@ interface Meta {
   user_whatsapp: string;
   meta_mensal: number;
   gasto_total: number;
-  mes_ano: string;
+  mes_ano?: string;
+  semana_ano?: string;
+  tipo_meta?: "mensal" | "semanal";
   created_at: string;
 }
 
@@ -87,7 +86,6 @@ const Dashboard = () => {
   const [timeFilter, setTimeFilter] = useState<TimeFilterType>("month");
   const [customDateRange, setCustomDateRange] = useState<{start?: Date; end?: Date}>({});
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
-  const [goalType, setGoalType] = useState<GoalType>("mensal");
 
   useEffect(() => {
     if (!dashboard_token) {
@@ -444,24 +442,8 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Goal Type Filter */}
-        <GoalTypeFilter
-          selectedType={goalType}
-          onTypeChange={setGoalType}
-        />
-
-        {/* Conditional Meta Display */}
-        {goalType === "mensal" ? (
-          <MetaChart meta={meta} />
-        ) : (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold">Metas Semanais</h2>
-              <WeeklyGoalDialog onGoalCreated={() => window.location.reload()} />
-            </div>
-            <WeeklyGoalsList />
-          </div>
-        )}
+        {/* Meta Chart with Internal Filter */}
+        <MetaChartWithFilter meta={meta} userWhatsapp={user.user_whatsapp} />
 
         {/* Pagamentos Parcelados */}
         <ParceledPaymentsList userWhatsapp={user.user_whatsapp} />
