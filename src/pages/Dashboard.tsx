@@ -159,16 +159,25 @@ const Dashboard = () => {
           dashboard_token: dashboard_token,
         });
 
-        // Buscar transações do usuário usando cliente Supabase
+        // Buscar transações do usuário usando função que bypassa RLS
         console.log("🔍🔍🔍 BUSCANDO TRANSAÇÕES PARA:", userInfo.user_whatsapp);
         
-        // Fazer fetch usando o cliente Supabase que mantém autenticação
-        const { data: transactionsData, error: transactionsError } = await supabase
-          .from('transacoes')
-          .select('*')
-          .eq('user_whatsapp', userInfo.user_whatsapp)
-          .order('created_at', { ascending: false });
+        // Usar função get_dashboard_data que já existe e bypassa RLS
+        const { data: dashboardData, error: transactionsError } = await supabase
+          .rpc('get_dashboard_data', { token_input: dashboard_token });
         
+        // Extrair apenas as transações dos dados do dashboard
+        const transactionsData = dashboardData?.map((item: any) => ({
+          id: item.transaction_id,
+          valor: item.transaction_valor,
+          user_whatsapp: item.user_whatsapp,
+          estabelecimento: item.transaction_estabelecimento,
+          detalhes: item.transaction_detalhes,
+          tipo: item.transaction_tipo,
+          categoria: item.transaction_categoria,
+          created_at: item.transaction_created_at,
+          quando: item.transaction_quando,
+        })).filter((item: any) => item.id !== null) || [];
         
         console.log("✅✅✅ RESULTADO DA BUSCA:", { 
           data: transactionsData, 
