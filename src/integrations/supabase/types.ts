@@ -71,57 +71,6 @@ export type Database = {
         }
         Relationships: []
       }
-      pagamentos_parcelados: {
-        Row: {
-          categoria: string | null
-          created_at: string
-          data_vencimento: string
-          descricao: string
-          estabelecimento: string | null
-          id: string
-          parcela_atual: number
-          status: string
-          total_parcelas: number
-          transacao_id: number | null
-          updated_at: string
-          user_whatsapp: string
-          valor_parcela: number
-          valor_total: number
-        }
-        Insert: {
-          categoria?: string | null
-          created_at?: string
-          data_vencimento: string
-          descricao: string
-          estabelecimento?: string | null
-          id?: string
-          parcela_atual: number
-          status?: string
-          total_parcelas: number
-          transacao_id?: number | null
-          updated_at?: string
-          user_whatsapp: string
-          valor_parcela: number
-          valor_total: number
-        }
-        Update: {
-          categoria?: string | null
-          created_at?: string
-          data_vencimento?: string
-          descricao?: string
-          estabelecimento?: string | null
-          id?: string
-          parcela_atual?: number
-          status?: string
-          total_parcelas?: number
-          transacao_id?: number | null
-          updated_at?: string
-          user_whatsapp?: string
-          valor_parcela?: number
-          valor_total?: number
-        }
-        Relationships: []
-      }
       profiles: {
         Row: {
           address: string | null
