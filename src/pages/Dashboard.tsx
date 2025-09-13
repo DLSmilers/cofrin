@@ -9,6 +9,7 @@ import { MetricsCards } from "@/components/dashboard/MetricsCards";
 import { ExpenseChart } from "@/components/dashboard/ExpenseChart";
 import { CategoryChart } from "@/components/dashboard/CategoryChart";
 import { TransactionsList } from "@/components/dashboard/TransactionsList";
+import { ParceledPaymentsList } from "@/components/dashboard/ParceledPaymentsList";
 import { AddTransactionDialog } from "@/components/dashboard/AddTransactionDialog";
 import { MetaChart } from "@/components/dashboard/MetaChart";
 import { ExportButton } from "@/components/dashboard/ExportButton";
@@ -418,7 +419,10 @@ const Dashboard = () => {
         {/* Meta Chart */}
         <MetaChart meta={meta} />
 
-        <TransactionsList 
+        {/* Pagamentos Parcelados */}
+        <ParceledPaymentsList userWhatsapp={user.user_whatsapp} />
+
+        <TransactionsList
           transactions={filteredTransactions} 
           userWhatsapp={user.user_whatsapp}
           onTransactionDeleted={() => {
