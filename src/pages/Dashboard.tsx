@@ -323,6 +323,12 @@ const Dashboard = () => {
   }, [transactions, timeFilter, customDateRange, selectedMonth]);
 
   const filterTransactionsByTime = () => {
+    console.log("🔍 Filtrando transações:", { 
+      totalTransactions: transactions.length, 
+      timeFilter, 
+      selectedMonth: selectedMonth?.toISOString() 
+    });
+    
     const now = new Date();
     let startDate: Date;
     let endDate = new Date(now.getTime() + 24 * 60 * 60 * 1000); // Adiciona 1 dia para incluir hoje
@@ -351,6 +357,7 @@ const Dashboard = () => {
           startDate = customDateRange.start;
           endDate = new Date(customDateRange.end.getTime() + 24 * 60 * 60 * 1000);
         } else {
+          console.log("✅ Sem filtro customizado, mantendo todas as transações");
           setFilteredTransactions(transactions);
           return;
         }
@@ -360,8 +367,26 @@ const Dashboard = () => {
     }
 
     const filtered = transactions.filter((transaction) => {
-      const transactionDate = new Date(transaction.quando || transaction.created_at);
+      // Priorizar o campo 'quando' se existir, senão usar 'created_at'
+      const dateStr = transaction.quando || transaction.created_at;
+      const transactionDate = new Date(dateStr);
+      
+      console.log("🗓️ Comparando data:", {
+        original: dateStr,
+        parsed: transactionDate,
+        startDate,
+        endDate,
+        inRange: transactionDate >= startDate && transactionDate <= endDate
+      });
+      
       return transactionDate >= startDate && transactionDate <= endDate;
+    });
+
+    console.log("✅ Transações filtradas:", {
+      original: transactions.length,
+      filtered: filtered.length,
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString()
     });
 
     setFilteredTransactions(filtered);
