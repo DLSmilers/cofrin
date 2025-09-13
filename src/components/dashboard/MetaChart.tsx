@@ -74,31 +74,6 @@ export const MetaChart = ({ meta }: MetaChartProps) => {
     );
   }
 
-  const progressPercentage = Math.min((meta.gasto_total / meta.meta_mensal) * 100, 100);
-  const remaining = meta.meta_mensal - meta.gasto_total;
-  const isOverBudget = meta.gasto_total > meta.meta_mensal;
-  const excess = isOverBudget ? meta.gasto_total - meta.meta_mensal : 0;
-
-  const chartData = [
-    {
-      name: "Progresso",
-      gasto: meta.gasto_total,
-      meta: meta.meta_mensal,
-      remaining: Math.max(0, remaining),
-    }
-  ];
-
-  const chartConfig = {
-    gasto: {
-      label: "Gasto Atual",
-      color: isOverBudget ? "hsl(var(--destructive))" : "hsl(var(--chart-1))",
-    },
-    meta: {
-      label: "Meta",
-      color: "hsl(var(--muted))",
-    },
-  };
-
   // Se estiver mostrando metas semanais, renderiza apenas a lista
   if (showWeeklyGoals) {
     return (
@@ -136,6 +111,72 @@ export const MetaChart = ({ meta }: MetaChartProps) => {
       </Card>
     );
   }
+
+  // Se meta é null, não é possível renderizar o gráfico mensal
+  if (!meta) {
+    return (
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <Target className="h-5 w-5" />
+              Meta Mensal
+            </CardTitle>
+            <div className="flex items-center space-x-2">
+              <Label htmlFor="meta-switch" className="text-sm">
+                <Calendar className="h-4 w-4 inline mr-1" />
+                Mensal
+              </Label>
+              <Switch 
+                id="meta-switch" 
+                checked={showWeeklyGoals} 
+                onCheckedChange={setShowWeeklyGoals}
+              />
+              <Label htmlFor="meta-switch" className="text-sm">
+                <CalendarDays className="h-4 w-4 inline mr-1" />
+                Semanal
+              </Label>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="overflow-hidden p-3 sm:p-6">
+          <div className="h-[200px] sm:h-[250px] flex items-center justify-center">
+            <div className="text-center space-y-2">
+              <Target className="h-12 w-12 mx-auto text-muted-foreground/50" />
+              <p className="text-muted-foreground">Nenhuma meta encontrada</p>
+              <p className="text-sm text-muted-foreground">Defina uma meta para acompanhar seu progresso</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Agora podemos calcular com segurança, pois sabemos que meta não é null
+  const progressPercentage = Math.min((meta.gasto_total / meta.meta_mensal) * 100, 100);
+  const remaining = meta.meta_mensal - meta.gasto_total;
+  const isOverBudget = meta.gasto_total > meta.meta_mensal;
+  const excess = isOverBudget ? meta.gasto_total - meta.meta_mensal : 0;
+
+  const chartData = [
+    {
+      name: "Progresso",
+      gasto: meta.gasto_total,
+      meta: meta.meta_mensal,
+      remaining: Math.max(0, remaining),
+    }
+  ];
+
+  const chartConfig = {
+    gasto: {
+      label: "Gasto Atual",
+      color: isOverBudget ? "hsl(var(--destructive))" : "hsl(var(--chart-1))",
+    },
+    meta: {
+      label: "Meta",
+      color: "hsl(var(--muted))",
+    },
+  };
 
   return (
     <Card>
