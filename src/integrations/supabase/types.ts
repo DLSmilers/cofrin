@@ -17,30 +17,48 @@ export type Database = {
       access_logs: {
         Row: {
           action: string
+          affected_table: string | null
           created_at: string
           details: Json | null
           id: string
           ip_address: unknown | null
+          record_id: string | null
+          transaction_amount: number | null
+          transaction_type: string | null
           user_agent: string | null
           user_id: string | null
+          user_name: string | null
+          user_whatsapp: string | null
         }
         Insert: {
           action: string
+          affected_table?: string | null
           created_at?: string
           details?: Json | null
           id?: string
           ip_address?: unknown | null
+          record_id?: string | null
+          transaction_amount?: number | null
+          transaction_type?: string | null
           user_agent?: string | null
           user_id?: string | null
+          user_name?: string | null
+          user_whatsapp?: string | null
         }
         Update: {
           action?: string
+          affected_table?: string | null
           created_at?: string
           details?: Json | null
           id?: string
           ip_address?: unknown | null
+          record_id?: string | null
+          transaction_amount?: number | null
+          transaction_type?: string | null
           user_agent?: string | null
           user_id?: string | null
+          user_name?: string | null
+          user_whatsapp?: string | null
         }
         Relationships: []
       }
@@ -343,6 +361,18 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      log_user_action: {
+        Args: {
+          p_action: string
+          p_affected_table?: string
+          p_details?: Json
+          p_record_id?: string
+          p_transaction_amount?: number
+          p_transaction_type?: string
+          p_user_id: string
+        }
+        Returns: string
       }
       soma_valores_funcionario: {
         Args: { p_funcionario_id: string }
