@@ -166,21 +166,8 @@ const Dashboard = () => {
         const { data: dashboardData, error: transactionsError } = await supabase
           .rpc('get_dashboard_data', { token_input: dashboard_token });
         
-        // Extrair apenas as transações dos dados do dashboard
-        const transactionsData = dashboardData?.map((item: any) => ({
-          id: item.transaction_id,
-          valor: item.transaction_valor,
-          user_whatsapp: item.user_whatsapp,
-          estabelecimento: item.transaction_estabelecimento,
-          detalhes: item.transaction_detalhes,
-          tipo: item.transaction_tipo,
-          categoria: item.transaction_categoria,
-          created_at: item.transaction_created_at,
-          quando: item.transaction_quando,
-        })).filter((item: any) => item.id !== null) || [];
-        
         console.log("✅✅✅ RESULTADO DA BUSCA:", { 
-          data: transactionsData, 
+          data: dashboardData, 
           error: transactionsError,
           user_whatsapp: userInfo.user_whatsapp 
         });
@@ -194,23 +181,25 @@ const Dashboard = () => {
           });
           setTransactions([]); // Garantir que array vazio seja definido mesmo com erro
         } else {
-          // Mapear os dados para a interface Transaction
-          const mappedTransactions: Transaction[] = (transactionsData || []).map((item: any) => ({
-            id: item.id,
-            valor: item.valor,
-            user_whatsapp: item.user_whatsapp,
-            estabelecimento: item.estabelecimento,
-            detalhes: item.detalhes,
-            tipo: item.tipo,
-            categoria: item.categoria,
-            created_at: item.created_at,
-            quando: item.quando,
-          }));
+          // Mapear os dados diretamente da função get_dashboard_data
+          const mappedTransactions: Transaction[] = (dashboardData || [])
+            .filter((item: any) => item.transaction_id !== null)
+            .map((item: any) => ({
+              id: item.transaction_id,
+              valor: item.transaction_valor,
+              user_whatsapp: item.transaction_user,
+              estabelecimento: item.transaction_estabelecimento,
+              detalhes: item.transaction_detalhes,
+              tipo: item.transaction_tipo,
+              categoria: item.transaction_categoria,
+              created_at: item.transaction_created_at,
+              quando: item.transaction_quando,
+            }));
           
           setTransactions(mappedTransactions);
           console.log("🎯🎯🎯 TRANSAÇÕES MAPEADAS:", mappedTransactions);
           // Para novos usuários sem transações, mostrar uma mensagem informativa
-          if (!transactionsData || transactionsData.length === 0) {
+          if (!mappedTransactions || mappedTransactions.length === 0) {
             toast({
               title: "🎉 Dashboard carregado com sucesso!",
               description: "Para começar a registrar transações, entre em contato via WhatsApp: +55 71 8299-8471",
@@ -219,7 +208,7 @@ const Dashboard = () => {
           } else {
             toast({
               title: "✅ Transações carregadas!",
-              description: `${transactionsData.length} transação(ões) encontrada(s)`,
+              description: `${mappedTransactions.length} transação(ões) encontrada(s)`,
               variant: "default",
             });
           }
