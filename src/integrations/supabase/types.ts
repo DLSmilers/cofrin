@@ -51,8 +51,6 @@ export type Database = {
           id: number
           mes_ano: string | null
           meta_mensal: number | null
-          semana_ano: string | null
-          tipo_meta: string | null
           user_whatsapp: string | null
         }
         Insert: {
@@ -61,8 +59,6 @@ export type Database = {
           id?: number
           mes_ano?: string | null
           meta_mensal?: number | null
-          semana_ano?: string | null
-          tipo_meta?: string | null
           user_whatsapp?: string | null
         }
         Update: {
@@ -71,8 +67,6 @@ export type Database = {
           id?: number
           mes_ano?: string | null
           meta_mensal?: number | null
-          semana_ano?: string | null
-          tipo_meta?: string | null
           user_whatsapp?: string | null
         }
         Relationships: []
