@@ -12,6 +12,7 @@ import { TransactionsList } from "@/components/dashboard/TransactionsList";
 import { ParceledPaymentsList } from "@/components/dashboard/ParceledPaymentsList";
 import { WeeklyGoalsList } from "@/components/dashboard/WeeklyGoalsList";
 import { WeeklyGoalDialog } from "@/components/dashboard/WeeklyGoalDialog";
+import { GoalTypeFilter, GoalType } from "@/components/dashboard/GoalTypeFilter";
 import { AddTransactionDialog } from "@/components/dashboard/AddTransactionDialog";
 import { MetaChart } from "@/components/dashboard/MetaChart";
 import { ExportButton } from "@/components/dashboard/ExportButton";
@@ -62,6 +63,7 @@ const Dashboard = () => {
   const [timeFilter, setTimeFilter] = useState<TimeFilterType>("month");
   const [customDateRange, setCustomDateRange] = useState<{start?: Date; end?: Date}>({});
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
+  const [goalType, setGoalType] = useState<GoalType>("mensal");
 
   useEffect(() => {
     if (!dashboard_token) {
@@ -418,17 +420,24 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Meta Chart */}
-        <MetaChart meta={meta} />
+        {/* Goal Type Filter */}
+        <GoalTypeFilter
+          selectedType={goalType}
+          onTypeChange={setGoalType}
+        />
 
-        {/* Metas Semanais */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold">Metas Semanais</h2>
-            <WeeklyGoalDialog onGoalCreated={() => window.location.reload()} />
+        {/* Conditional Meta Display */}
+        {goalType === "mensal" ? (
+          <MetaChart meta={meta} />
+        ) : (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold">Metas Semanais</h2>
+              <WeeklyGoalDialog onGoalCreated={() => window.location.reload()} />
+            </div>
+            <WeeklyGoalsList />
           </div>
-          <WeeklyGoalsList />
-        </div>
+        )}
 
         {/* Pagamentos Parcelados */}
         <ParceledPaymentsList userWhatsapp={user.user_whatsapp} />
