@@ -163,9 +163,11 @@ const Dashboard = () => {
         let transactionsData: any[] | null = null;
         let transactionsError: any = null;
         
+        console.log("🔍 Buscando transações para user_whatsapp:", userInfo.user_whatsapp);
+        
         // Fazer fetch usando um approach mais simples para evitar problemas de tipos
         const response = await fetch(
-          `https://rliefaciadhxjjynuyod.supabase.co/rest/v1/transacoes?user_whatsapp=eq.${userInfo.user_whatsapp}&order=created_at.desc`,
+          `https://rliefaciadhxjjynuyod.supabase.co/rest/v1/transacoes?user_whatsapp=eq.${encodeURIComponent(userInfo.user_whatsapp)}&order=created_at.desc`,
           {
             headers: {
               'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsaWVmYWNpYWRoeGpqeW51eW9kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwNTgzOTYsImV4cCI6MjA3MDYzNDM5Nn0.DK2tzoLNRRwF0bG6qkHNrSye3xXGB-x-a0NIICHtZlo',
@@ -177,7 +179,9 @@ const Dashboard = () => {
         
         if (response.ok) {
           transactionsData = await response.json();
+          console.log("✅ Transações encontradas:", transactionsData?.length || 0, transactionsData);
         } else {
+          console.error("❌ Erro na resposta da API:", response.status, response.statusText);
           transactionsError = { message: 'Erro ao buscar transações' };
         }
 
@@ -435,8 +439,9 @@ const Dashboard = () => {
             if (user) {
               const fetchTransactions = async () => {
                 try {
+                  console.log("🔄 Refrescando transações para user_whatsapp:", user.user_whatsapp);
                   const response = await fetch(
-                    `https://rliefaciadhxjjynuyod.supabase.co/rest/v1/transacoes?user_whatsapp=eq.${user.user_whatsapp}&order=created_at.desc`,
+                    `https://rliefaciadhxjjynuyod.supabase.co/rest/v1/transacoes?user_whatsapp=eq.${encodeURIComponent(user.user_whatsapp)}&order=created_at.desc`,
                     {
                       headers: {
                         'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsaWVmYWNpYWRoeGpqeW51eW9kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwNTgzOTYsImV4cCI6MjA3MDYzNDM5Nn0.DK2tzoLNRRwF0bG6qkHNrSye3xXGB-x-a0NIICHtZlo',
