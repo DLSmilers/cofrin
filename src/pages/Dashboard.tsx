@@ -416,6 +416,38 @@ const Dashboard = () => {
       <div className="container scrollable mx-auto p-3 sm:p-6 space-y-4 sm:space-y-6 max-w-full">
         <DashboardHeader userName={user.nome} isAdmin={isAdmin} />
         
+        {/* Mensagem sobre o bot */}
+        <Card className="border-2 border-primary bg-primary/5">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="rounded-full bg-primary/10 p-2">
+                <svg 
+                  className="h-5 w-5 text-primary" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth={2} 
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" 
+                  />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-primary mb-1">
+                  📱 Adicione o Bot do WhatsApp
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Para começar a registrar suas transações, adicione o número do bot: 
+                  <span className="font-bold text-foreground ml-1">(71) 9 8299-8471</span>
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
         <SubscriptionStatus />
         
         <TimeFilter
