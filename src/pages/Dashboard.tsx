@@ -517,7 +517,25 @@ const Dashboard = () => {
         </div>
 
         {/* Meta Chart */}
-        <MetaChart meta={meta} />
+        <MetaChart 
+          meta={meta} 
+          actualSpending={
+            // Calcular o gasto real do mês das transações
+            // Usar todas as transações (não filtradas) para calcular o mês da meta
+            meta ? transactions
+              .filter(t => {
+                if (t.tipo !== "despesa") return false;
+                
+                // Verificar se a transação é do mesmo mês da meta
+                const transactionDate = new Date(t.quando || t.created_at);
+                const [metaYear, metaMonth] = meta.mes_ano.split('-');
+                
+                return transactionDate.getFullYear() === parseInt(metaYear) &&
+                       (transactionDate.getMonth() + 1) === parseInt(metaMonth);
+              })
+              .reduce((sum, t) => sum + t.valor, 0) : 0
+          } 
+        />
 
         {/* Pagamentos Parcelados */}
         <ParceledPaymentsList userWhatsapp={user.user_whatsapp} />

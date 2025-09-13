@@ -20,15 +20,27 @@ interface Meta {
 
 interface MetaChartProps {
   meta: Meta | null;
+  actualSpending?: number; // Gasto real calculado das transações
 }
 
-export const MetaChart = ({ meta }: MetaChartProps) => {
+export const MetaChart = ({ meta, actualSpending }: MetaChartProps) => {
   const [showWeeklyGoals, setShowWeeklyGoals] = useState(false);
+  
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("pt-BR", {
       style: "currency",
       currency: "BRL",
     }).format(value);
+  };
+
+  const formatMonthYear = (mesAno: string) => {
+    const [year, month] = mesAno.split('-');
+    const monthNames = [
+      'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+      'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+    ];
+    const monthName = monthNames[parseInt(month) - 1];
+    return `Meta de ${monthName} de ${year}`;
   };
 
   if (!meta && !showWeeklyGoals) {
@@ -152,16 +164,19 @@ export const MetaChart = ({ meta }: MetaChartProps) => {
     );
   }
 
+  // Usar o gasto real calculado das transações se disponível, senão usar o da meta
+  const currentSpending = actualSpending ?? meta.gasto_total;
+  
   // Agora podemos calcular com segurança, pois sabemos que meta não é null
-  const progressPercentage = Math.min((meta.gasto_total / meta.meta_mensal) * 100, 100);
-  const remaining = meta.meta_mensal - meta.gasto_total;
-  const isOverBudget = meta.gasto_total > meta.meta_mensal;
-  const excess = isOverBudget ? meta.gasto_total - meta.meta_mensal : 0;
+  const progressPercentage = Math.min((currentSpending / meta.meta_mensal) * 100, 100);
+  const remaining = meta.meta_mensal - currentSpending;
+  const isOverBudget = currentSpending > meta.meta_mensal;
+  const excess = isOverBudget ? currentSpending - meta.meta_mensal : 0;
 
   const chartData = [
     {
       name: "Progresso",
-      gasto: meta.gasto_total,
+      gasto: currentSpending,
       meta: meta.meta_mensal,
       remaining: Math.max(0, remaining),
     }
@@ -184,7 +199,7 @@ export const MetaChart = ({ meta }: MetaChartProps) => {
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <Target className="h-5 w-5" />
-            Meta Mensal - {meta.mes_ano}
+            {formatMonthYear(meta.mes_ano)}
           </CardTitle>
           <div className="flex items-center space-x-2">
             <Label htmlFor="meta-switch" className="text-sm">
@@ -213,7 +228,7 @@ export const MetaChart = ({ meta }: MetaChartProps) => {
             </div>
             <div className="space-y-1">
               <p className="text-sm text-muted-foreground">Gasto Atual</p>
-              <p className="text-lg font-semibold">{formatCurrency(meta.gasto_total)}</p>
+              <p className="text-lg font-semibold">{formatCurrency(currentSpending)}</p>
             </div>
           </div>
 
