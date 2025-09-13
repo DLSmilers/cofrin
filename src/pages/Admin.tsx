@@ -15,7 +15,8 @@ import {
   Database,
   Calendar,
   DollarSign,
-  AlertTriangle
+  AlertTriangle,
+  ArrowLeft
 } from "lucide-react";
 import { format } from "date-fns";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -205,10 +206,18 @@ const Admin = () => {
       <div className="container mx-auto">
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => navigate(-1)}
+              className="mr-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
             <Shield className="h-8 w-8 text-primary" />
             <h1 className="text-3xl font-bold">Painel Administrativo</h1>
           </div>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground ml-14">
             Controle total do sistema - Usuários, transações e logs de acesso
           </p>
         </div>
