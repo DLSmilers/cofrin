@@ -4,15 +4,16 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { useCep } from "@/hooks/use-cep";
 import { supabase } from "@/integrations/supabase/client";
-import { PiggyBank, User, Calendar, MapPin, Phone } from "lucide-react";
+import { PiggyBank, User, Calendar, MapPin, Phone, Search, Loader2 } from "lucide-react";
 import { EmailConfirmationDialog } from "@/components/auth/EmailConfirmationDialog";
 
 const SignUp = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { cepData, loading: cepLoading, error: cepError, searchCep } = useCep();
   const [loading, setLoading] = useState(false);
   const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
   const [userEmail, setUserEmail] = useState("");
@@ -23,8 +24,15 @@ const SignUp = () => {
     password: "",
     confirmPassword: "",
     birthDate: "",
-    address: "",
-    phoneWhatsapp: ""
+    phoneWhatsapp: "",
+    // Campos de endereço separados
+    cep: "",
+    logradouro: "",
+    numero: "",
+    complemento: "",
+    bairro: "",
+    cidade: "",
+    estado: ""
   });
 
   useEffect(() => {
@@ -40,6 +48,21 @@ const SignUp = () => {
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleCepSearch = async (cep: string) => {
+    if (cep.replace(/\D/g, '').length === 8) {
+      const data = await searchCep(cep);
+      if (data) {
+        setFormData(prev => ({
+          ...prev,
+          logradouro: data.logradouro,
+          bairro: data.bairro,
+          cidade: data.localidade,
+          estado: data.uf
+        }));
+      }
+    }
   };
 
   const validateForm = () => {
@@ -97,9 +120,17 @@ const SignUp = () => {
             first_name: formData.firstName,
             last_name: formData.lastName,
             birth_date: formData.birthDate,
-            address: formData.address,
+            address: `${formData.logradouro}, ${formData.numero}${formData.complemento ? ', ' + formData.complemento : ''}, ${formData.bairro}, ${formData.cidade}-${formData.estado}, CEP: ${formData.cep}`,
             phone_whatsapp: formData.phoneWhatsapp,
-            whatsapp: formData.phoneWhatsapp
+            whatsapp: formData.phoneWhatsapp,
+            // Campos individuais do endereço
+            cep: formData.cep,
+            logradouro: formData.logradouro,
+            numero: formData.numero,
+            complemento: formData.complemento,
+            bairro: formData.bairro,
+            cidade: formData.cidade,
+            estado: formData.estado
           }
         }
       });
@@ -235,19 +266,115 @@ const SignUp = () => {
                   </p>
                 </div>
 
-                {/* Address */}
-                <div className="space-y-2">
-                  <Label htmlFor="address" className="flex items-center gap-2">
+                {/* Address Fields */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 mb-2">
                     <MapPin className="h-4 w-4" />
-                    Endereço
-                  </Label>
-                  <Textarea
-                    id="address"
-                    value={formData.address}
-                    onChange={(e) => handleInputChange("address", e.target.value)}
-                    placeholder="Rua, número, bairro, cidade - CEP"
-                    rows={3}
-                  />
+                    <Label className="text-base font-semibold">Endereço</Label>
+                  </div>
+
+                  {/* CEP with search */}
+                  <div className="space-y-2">
+                    <Label htmlFor="cep">CEP</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="cep"
+                        type="text"
+                        value={formData.cep}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/\D/g, '').replace(/(\d{5})(\d{3})/, '$1-$2');
+                          handleInputChange("cep", value);
+                          if (value.replace(/\D/g, '').length === 8) {
+                            handleCepSearch(value);
+                          }
+                        }}
+                        placeholder="00000-000"
+                        maxLength={9}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => handleCepSearch(formData.cep)}
+                        disabled={cepLoading || formData.cep.replace(/\D/g, '').length !== 8}
+                      >
+                        {cepLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+                      </Button>
+                    </div>
+                    {cepError && <p className="text-sm text-destructive">{cepError}</p>}
+                  </div>
+
+                  {/* Street and Number */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="md:col-span-2 space-y-2">
+                      <Label htmlFor="logradouro">Logradouro</Label>
+                      <Input
+                        id="logradouro"
+                        type="text"
+                        value={formData.logradouro}
+                        onChange={(e) => handleInputChange("logradouro", e.target.value)}
+                        placeholder="Rua, Avenida, etc."
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="numero">Número</Label>
+                      <Input
+                        id="numero"
+                        type="text"
+                        value={formData.numero}
+                        onChange={(e) => handleInputChange("numero", e.target.value)}
+                        placeholder="123"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Complement and Neighborhood */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="complemento">Complemento</Label>
+                      <Input
+                        id="complemento"
+                        type="text"
+                        value={formData.complemento}
+                        onChange={(e) => handleInputChange("complemento", e.target.value)}
+                        placeholder="Apto, Bloco, etc. (opcional)"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="bairro">Bairro</Label>
+                      <Input
+                        id="bairro"
+                        type="text"
+                        value={formData.bairro}
+                        onChange={(e) => handleInputChange("bairro", e.target.value)}
+                        placeholder="Nome do bairro"
+                      />
+                    </div>
+                  </div>
+
+                  {/* City and State */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="md:col-span-2 space-y-2">
+                      <Label htmlFor="cidade">Cidade</Label>
+                      <Input
+                        id="cidade"
+                        type="text"
+                        value={formData.cidade}
+                        onChange={(e) => handleInputChange("cidade", e.target.value)}
+                        placeholder="Nome da cidade"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="estado">Estado</Label>
+                      <Input
+                        id="estado"
+                        type="text"
+                        value={formData.estado}
+                        onChange={(e) => handleInputChange("estado", e.target.value)}
+                        placeholder="SP"
+                        maxLength={2}
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 {/* Login Credentials */}
