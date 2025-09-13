@@ -150,8 +150,6 @@ const SignUp = () => {
           });
         }
       } else {
-        // Email personalizado será enviado automaticamente via webhook
-
         // Sucesso - mostrar tela de confirmação
         setUserEmail(formData.email);
         setShowEmailConfirmation(true);
