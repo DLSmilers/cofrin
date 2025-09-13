@@ -20,28 +20,37 @@ export const EmailConfirmationDialog = ({ email, onBackToLogin }: EmailConfirmat
                   <CheckCircle className="h-12 w-12 text-green-600" />
                 </div>
               </div>
-              <CardTitle className="text-2xl text-green-800">Conta Criada com Sucesso!</CardTitle>
+              <CardTitle className="text-2xl text-green-800">🎉 Conta Criada com Sucesso!</CardTitle>
               <CardDescription className="text-center">
-                Falta apenas um passo para começar seu teste gratuito
+                Bem-vindo ao Cofrin! Falta apenas um passo para começar
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="text-center space-y-4">
                 <div className="flex justify-center">
-                  <Mail className="h-16 w-16 text-blue-500" />
+                  <div className="p-4 bg-gradient-to-br from-green-500/10 to-blue-500/10 rounded-full">
+                    <Mail className="h-16 w-16 text-blue-500" />
+                  </div>
                 </div>
                 
                 <div className="space-y-2">
-                  <h3 className="text-lg font-semibold">Confirme seu email</h3>
+                  <h3 className="text-lg font-semibold">📧 Confirme seu email</h3>
                   <p className="text-muted-foreground">
-                    Enviamos um link de confirmação para:
+                    Enviamos um email especial de boas-vindas para:
                   </p>
                   <p className="font-semibold text-primary">{email}</p>
                 </div>
                 
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <p className="text-sm text-blue-800">
-                    <strong>Clique no link do email</strong> para ativar sua conta e começar seu teste gratuito de 30 dias.
+                <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-4">
+                  <p className="text-sm text-green-800">
+                    <strong>🐷 Verifique sua caixa de entrada!</strong><br/>
+                    Clique no botão do email para ativar sua conta e começar seu teste gratuito de 30 dias.
+                  </p>
+                </div>
+
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                  <p className="text-xs text-yellow-800">
+                    <strong>💡 Dica:</strong> O email pode levar alguns minutos para chegar. Verifique também sua pasta de spam!
                   </p>
                 </div>
               </div>
