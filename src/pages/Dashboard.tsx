@@ -159,36 +159,25 @@ const Dashboard = () => {
           dashboard_token: dashboard_token,
         });
 
-        // Buscar transações do usuário
-        let transactionsData: any[] | null = null;
-        let transactionsError: any = null;
-        
+        // Buscar transações do usuário usando cliente Supabase
         console.log("🔍🔍🔍 BUSCANDO TRANSAÇÕES PARA:", userInfo.user_whatsapp);
-        console.log("🔍🔍🔍 URL COMPLETA:", `https://rliefaciadhxjjynuyod.supabase.co/rest/v1/transacoes?user_whatsapp=eq.${encodeURIComponent(userInfo.user_whatsapp)}&order=created_at.desc`);
         
-        // Fazer fetch usando um approach mais simples para evitar problemas de tipos
-        const response = await fetch(
-          `https://rliefaciadhxjjynuyod.supabase.co/rest/v1/transacoes?user_whatsapp=eq.${encodeURIComponent(userInfo.user_whatsapp)}&order=created_at.desc`,
-          {
-            headers: {
-              'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsaWVmYWNpYWRoeGpqeW51eW9kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwNTgzOTYsImV4cCI6MjA3MDYzNDM5Nn0.DK2tzoLNRRwF0bG6qkHNrSye3xXGB-x-a0NIICHtZlo',
-              'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsaWVmYWNpYWRoeGpqeW51eW9kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwNTgzOTYsImV4cCI6MjA3MDYzNDM5Nn0.DK2tzoLNRRwF0bG6qkHNrSye3xXGB-x-a0NIICHtZlo',
-              'Content-Type': 'application/json'
-            }
-          }
-        );
+        // Fazer fetch usando o cliente Supabase que mantém autenticação
+        const { data: transactionsData, error: transactionsError } = await supabase
+          .from('transacoes')
+          .select('*')
+          .eq('user_whatsapp', userInfo.user_whatsapp)
+          .order('created_at', { ascending: false });
         
-        if (response.ok) {
-          transactionsData = await response.json();
-          console.log("✅✅✅ TRANSAÇÕES ENCONTRADAS:", transactionsData?.length || 0);
-          console.log("✅✅✅ DADOS DAS TRANSAÇÕES:", transactionsData);
-        } else {
-          console.error("❌❌❌ ERRO NA RESPOSTA DA API:", response.status, response.statusText);
-          transactionsError = { message: 'Erro ao buscar transações' };
-        }
+        
+        console.log("✅✅✅ RESULTADO DA BUSCA:", { 
+          data: transactionsData, 
+          error: transactionsError,
+          user_whatsapp: userInfo.user_whatsapp 
+        });
 
         if (transactionsError) {
-          console.error("Erro ao buscar transações:", transactionsError);
+          console.error("❌❌❌ ERRO SUPABASE:", transactionsError);
           toast({
             title: "Erro ao carregar dados",
             description: "Não foi possível carregar as transações",
@@ -210,11 +199,18 @@ const Dashboard = () => {
           }));
           
           setTransactions(mappedTransactions);
+          console.log("🎯🎯🎯 TRANSAÇÕES MAPEADAS:", mappedTransactions);
           // Para novos usuários sem transações, mostrar uma mensagem informativa
           if (!transactionsData || transactionsData.length === 0) {
             toast({
               title: "🎉 Dashboard carregado com sucesso!",
               description: "Para começar a registrar transações, entre em contato via WhatsApp: +55 71 8299-8471",
+              variant: "default",
+            });
+          } else {
+            toast({
+              title: "✅ Transações carregadas!",
+              description: `${transactionsData.length} transação(ões) encontrada(s)`,
               variant: "default",
             });
           }
@@ -442,20 +438,16 @@ const Dashboard = () => {
               const fetchTransactions = async () => {
                 try {
                   console.log("🔄 Refrescando transações para user_whatsapp:", user.user_whatsapp);
-                  const response = await fetch(
-                    `https://rliefaciadhxjjynuyod.supabase.co/rest/v1/transacoes?user_whatsapp=eq.${encodeURIComponent(user.user_whatsapp)}&order=created_at.desc`,
-                    {
-                      headers: {
-                        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsaWVmYWNpYWRoeGpqeW51eW9kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwNTgzOTYsImV4cCI6MjA3MDYzNDM5Nn0.DK2tzoLNRRwF0bG6qkHNrSye3xXGB-x-a0NIICHtZlo',
-                        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsaWVmYWNpYWRoeGpqeW51eW9kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwNTgzOTYsImV4cCI6MjA3MDYzNDM5Nn0.DK2tzoLNRRwF0bG6qkHNrSye3xXGB-x-a0NIICHtZlo',
-                        'Content-Type': 'application/json'
-                      }
-                    }
-                  );
+                  const { data: refreshedData, error: refreshError } = await supabase
+                    .from('transacoes')
+                    .select('*')
+                    .eq('user_whatsapp', user.user_whatsapp)
+                    .order('created_at', { ascending: false });
                   
-                  if (response.ok) {
-                    const transactionsData = await response.json();
-                    const mappedTransactions: Transaction[] = (transactionsData || []).map((item: any) => ({
+                  if (refreshError) {
+                    console.error("❌ Erro ao refrescar transações:", refreshError);
+                  } else {
+                    const mappedTransactions: Transaction[] = (refreshedData || []).map((item: any) => ({
                       id: item.id,
                       valor: item.valor,
                       user_whatsapp: item.user_whatsapp,
@@ -467,9 +459,10 @@ const Dashboard = () => {
                       quando: item.quando,
                     }));
                     setTransactions(mappedTransactions);
+                    console.log("🔄 Transações refrescadas:", mappedTransactions.length);
                   }
                 } catch (error) {
-                  console.error("Erro ao recarregar transações:", error);
+                  console.error("Erro ao refrescar transações:", error);
                 }
               };
               fetchTransactions();
