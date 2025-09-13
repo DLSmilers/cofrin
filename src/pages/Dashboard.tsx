@@ -1,3 +1,4 @@
+import React from "react";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -52,7 +53,30 @@ interface Meta {
 export type TimeFilterType = "day" | "week" | "month" | "custom" | "specific-month";
 
 const Dashboard = () => {
-  const { dashboard_token } = useParams<{ dashboard_token: string }>();
+  // Add error boundary for useParams
+  let dashboard_token: string | undefined;
+  try {
+    const params = useParams<{ dashboard_token: string }>();
+    dashboard_token = params.dashboard_token;
+  } catch (error) {
+    console.error("Error accessing useParams:", error);
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle className="text-center text-destructive">
+              Erro de Navegação
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-center text-muted-foreground">
+              Erro ao acessar parâmetros de navegação. Recarregue a página.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
   const navigate = useNavigate();
   const { isAdmin } = useAdmin();
   const [user, setUser] = useState<User | null>(null);
