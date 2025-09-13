@@ -329,11 +329,26 @@ const Dashboard = () => {
       selectedMonth: selectedMonth?.toISOString() 
     });
     
+    // Se não há transações, não faz nada
+    if (transactions.length === 0) {
+      setFilteredTransactions([]);
+      return;
+    }
+    
+    // IMPORTANTE: Para evitar filtros agressivos, se o timeFilter for "specific-month" 
+    // mas o selectedMonth for o mês atual, tratar como "month" normal
     const now = new Date();
+    const isCurrentMonth = selectedMonth && 
+      selectedMonth.getMonth() === now.getMonth() && 
+      selectedMonth.getFullYear() === now.getFullYear();
+    
+    const effectiveFilter = (timeFilter === "specific-month" && isCurrentMonth) ? "month" : timeFilter;
+    
+    
     let startDate: Date;
     let endDate = new Date(now.getTime() + 24 * 60 * 60 * 1000); // Adiciona 1 dia para incluir hoje
 
-    switch (timeFilter) {
+    switch (effectiveFilter) {
       case "day":
         startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
@@ -342,14 +357,18 @@ const Dashboard = () => {
         startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
         break;
       case "month":
+        // Para o filtro "month", mostrar o mês atual sempre
         startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+        endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
         break;
       case "specific-month":
         if (selectedMonth) {
           startDate = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth(), 1);
           endDate = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1, 0, 23, 59, 59);
         } else {
+          // Se não há selectedMonth, usar o mês atual
           startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+          endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
         }
         break;
       case "custom":
@@ -363,30 +382,54 @@ const Dashboard = () => {
         }
         break;
       default:
-        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+        // Por padrão, mostrar todas as transações sem filtro
+        console.log("✅ Filtro padrão, mantendo todas as transações");
+        setFilteredTransactions(transactions);
+        return;
     }
 
     const filtered = transactions.filter((transaction) => {
       // Priorizar o campo 'quando' se existir, senão usar 'created_at'
       const dateStr = transaction.quando || transaction.created_at;
-      const transactionDate = new Date(dateStr);
       
-      console.log("🗓️ Comparando data:", {
-        original: dateStr,
-        parsed: transactionDate,
-        startDate,
-        endDate,
-        inRange: transactionDate >= startDate && transactionDate <= endDate
-      });
+      // Lidar com diferentes formatos de data
+      let transactionDate: Date;
+      if (typeof dateStr === 'string') {
+        // Se é string, converter para Date
+        transactionDate = new Date(dateStr);
+      } else {
+        // Se já é Date ou timestamp
+        transactionDate = new Date(dateStr);
+      }
       
-      return transactionDate >= startDate && transactionDate <= endDate;
+      // Verificar se a data é válida
+      if (isNaN(transactionDate.getTime())) {
+        console.error("⚠️ Data inválida encontrada:", dateStr);
+        return false;
+      }
+      
+      const inRange = transactionDate >= startDate && transactionDate <= endDate;
+      
+      if (!inRange) {
+        console.log("🗓️ Transação fora do período:", {
+          id: transaction.id,
+          date: dateStr,
+          parsed: transactionDate.toISOString(),
+          startDate: startDate.toISOString(),
+          endDate: endDate.toISOString()
+        });
+      }
+      
+      return inRange;
     });
 
     console.log("✅ Transações filtradas:", {
       original: transactions.length,
       filtered: filtered.length,
-      startDate: startDate.toISOString(),
-      endDate: endDate.toISOString()
+      effectiveFilter,
+      timeFilter,
+      startDate: startDate?.toISOString(),
+      endDate: endDate?.toISOString()
     });
 
     setFilteredTransactions(filtered);
