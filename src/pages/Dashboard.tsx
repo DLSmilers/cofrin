@@ -17,6 +17,7 @@ import { MetaChart } from "@/components/dashboard/MetaChart";
 import { ExportButton } from "@/components/dashboard/ExportButton";
 import { TimeFilter } from "@/components/dashboard/TimeFilter";
 import { SubscriptionStatus } from "@/components/dashboard/SubscriptionStatus";
+import { WhatsAppNotice } from "@/components/dashboard/WhatsAppNotice";
 import { toast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 
@@ -206,8 +207,8 @@ const Dashboard = () => {
           // Para novos usuários sem transações, mostrar uma mensagem informativa
           if (!transactionsData || transactionsData.length === 0) {
             toast({
-              title: "Dashboard carregado com sucesso",
-              description: "Usuário autenticado. Ainda não há transações registradas.",
+              title: "🎉 Dashboard carregado com sucesso!",
+              description: "Para começar a registrar transações, entre em contato via WhatsApp: +55 71 8299-8471",
               variant: "default",
             });
           }
@@ -389,6 +390,8 @@ const Dashboard = () => {
     <div className="min-h-screen bg-background overflow-x-hidden">
       <div className="container scrollable mx-auto p-3 sm:p-6 space-y-4 sm:space-y-6 max-w-full">
         <DashboardHeader userName={user.nome} isAdmin={isAdmin} />
+        
+        <WhatsAppNotice />
         
         <SubscriptionStatus />
         
