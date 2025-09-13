@@ -13,6 +13,7 @@ import Pricing from "./pages/Pricing";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentSuccessClose from "./pages/PaymentSuccessClose";
 import Admin from "./pages/Admin";
+import Settings from "./pages/Settings";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/payment-success-close" element={<PaymentSuccessClose />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="/dashboard/:dashboard_token" element={<Dashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

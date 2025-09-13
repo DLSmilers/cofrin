@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Shield } from "lucide-react";
+import { Shield, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface DashboardHeaderProps {
@@ -24,6 +24,14 @@ export const DashboardHeader = ({ userName, isAdmin }: DashboardHeaderProps) => 
             </p>
           </div>
           <div className="flex items-center gap-3">
+            <Button 
+              variant="secondary" 
+              onClick={() => navigate('/settings')}
+              className="flex items-center gap-2 bg-white/20 text-primary-foreground border-0 hover:bg-white/30"
+            >
+              <Settings className="h-4 w-4" />
+              Configurações
+            </Button>
             {isAdmin && (
               <Button 
                 variant="secondary" 
