@@ -88,43 +88,64 @@ const Dashboard = () => {
         }
 
         const userInfo = userData[0];
-        // Verificar se o período de teste expirou
-        const { data: trialExpired, error: trialError } = await supabase
-          .rpc('check_trial_expired', { user_uuid: userInfo.user_uuid });
+        
+        // Verificar se o usuário é admin primeiro
+        const { data: roleData } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", userInfo.user_uuid)
+          .single();
 
-        if (trialError) {
-          console.error("Erro ao verificar período de teste:", trialError);
-        }
+        const isUserAdmin = roleData?.role === "admin";
 
-        if (trialExpired) {
-          // Atualiza status de assinatura a partir da Stripe antes de decidir
-          try {
-            await supabase.functions.invoke("check-subscription");
-          } catch (err) {
-            console.error("Erro ao atualizar assinatura:", err);
+        // Se não for admin, verificar período de teste e assinatura
+        if (!isUserAdmin) {
+          // Verificar se o período de teste expirou
+          const { data: trialExpired, error: trialError } = await supabase
+            .rpc('check_trial_expired', { user_uuid: userInfo.user_uuid });
+
+          if (trialError) {
+            console.error("Erro ao verificar período de teste:", trialError);
           }
 
-          // Verificar se tem assinatura ativa no banco após atualização
-          const { data: subscription, error: subError } = await supabase
-            .from('subscribers')
-            .select('subscribed')
-            .eq('user_id', userInfo.user_uuid)
-            .maybeSingle();
+          if (trialExpired) {
+            // Atualiza status de assinatura a partir da Stripe antes de decidir
+            try {
+              await supabase.functions.invoke("check-subscription");
+            } catch (err) {
+              console.error("Erro ao atualizar assinatura:", err);
+            }
 
-          if (subError) {
-            console.error("Erro ao buscar assinatura:", subError);
-          }
+            // Verificar se tem assinatura ativa no banco após atualização
+            const { data: subscription, error: subError } = await supabase
+              .from('subscribers')
+              .select('subscribed')
+              .eq('user_id', userInfo.user_uuid)
+              .maybeSingle();
 
-          // Redireciona se NÃO houver registro OU se vier explicitamente como não assinante
-          if (!subscription || !subscription.subscribed) {
-            toast({
-              title: "Período de teste expirado",
-              description: "Seu período de teste de 30 dias expirou. Escolha um plano para continuar usando o dashboard.",
-              variant: "destructive",
-            });
-            navigate("/pricing");
-            return;
+            if (subError) {
+              console.error("Erro ao buscar assinatura:", subError);
+            }
+
+            // Redireciona se NÃO houver registro OU se vier explicitamente como não assinante
+            if (!subscription || !subscription.subscribed) {
+              toast({
+                title: "Período de teste expirado",
+                description: "Seu período de teste de 30 dias expirou. Escolha um plano para continuar usando o dashboard.",
+                variant: "destructive",
+              });
+              navigate("/pricing");
+              return;
+            }
           }
+        } else {
+          // Log para admins
+          console.log("👑 Admin detectado - acesso ilimitado concedido");
+          toast({
+            title: "Acesso Administrativo",
+            description: "Bem-vindo, administrador! Você tem acesso ilimitado.",
+            variant: "default",
+          });
         }
 
         setUser({

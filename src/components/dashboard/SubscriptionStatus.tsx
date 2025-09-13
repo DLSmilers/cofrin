@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Crown, Calendar, CreditCard } from "lucide-react";
 import { useSubscription } from "@/hooks/use-subscription";
+import { useAdmin } from "@/hooks/use-admin";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
@@ -11,6 +12,7 @@ import { StripeDebugButton } from "./StripeDebugButton";
 
 export const SubscriptionStatus = () => {
   const { subscribed, subscription_tier, subscription_end, isTrialActive, isLoading, hasAccess } = useSubscription();
+  const { isAdmin, loading: adminLoading } = useAdmin();
   const navigate = useNavigate();
   const [trialEndDate, setTrialEndDate] = useState<string | null>(null);
 
@@ -33,7 +35,7 @@ export const SubscriptionStatus = () => {
     fetchTrialDate();
   }, []);
 
-  if (isLoading) {
+  if (isLoading || adminLoading) {
     return (
       <Card className="mb-6">
         <CardContent className="p-4">
@@ -44,6 +46,28 @@ export const SubscriptionStatus = () => {
               <div className="h-4 bg-muted rounded w-1/2"></div>
             </div>
           </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Se for admin, mostrar card especial de acesso administrativo
+  if (isAdmin) {
+    return (
+      <Card className="mb-6 border-purple-200 bg-purple-50/50">
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Crown className="h-5 w-5 text-purple-600" />
+            <span>Acesso Administrativo</span>
+            <Badge variant="secondary" className="bg-purple-100 text-purple-800">
+              Ilimitado
+            </Badge>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">
+            Você tem acesso administrativo com privilégios ilimitados. Não há restrições de assinatura.
+          </p>
         </CardContent>
       </Card>
     );
