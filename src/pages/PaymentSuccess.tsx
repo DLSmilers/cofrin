@@ -20,7 +20,7 @@ const PaymentSuccess = () => {
       }
 
       try {
-        console.log("🔍 Verificando pagamento...");
+        
         
         // Wait a bit before checking to allow Stripe to process
         await new Promise(resolve => setTimeout(resolve, 2000));
@@ -45,7 +45,7 @@ const PaymentSuccess = () => {
             return;
           }
           
-          console.log("✅ Sessão renovada com sucesso");
+          
         }
 
         const currentSession = session || await supabase.auth.getSession().then(res => res.data.session);
@@ -61,7 +61,7 @@ const PaymentSuccess = () => {
           return;
         }
 
-        console.log("✅ Token de acesso disponível, verificando assinatura...");
+        
 
         // Verify subscription status after payment with proper auth
         const { data, error } = await supabase.functions.invoke("check-subscription", {
@@ -69,7 +69,7 @@ const PaymentSuccess = () => {
             Authorization: `Bearer ${currentSession.access_token}`,
           },
         });
-        console.log("📊 Resultado da verificação:", { data, error });
+        
         
         if (error) {
           console.error("Erro ao verificar assinatura:", error);

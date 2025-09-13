@@ -25,7 +25,7 @@ export const StripeDebugButton = () => {
         title: "Stripe conectado",
         description: `Conta: ${acct} • Cliente: ${cust}`,
       });
-      console.log("Stripe account info:", data);
+      
     } catch (e) {
       console.error(e);
       toast({ title: "Falha no diagnóstico", description: "Verifique os logs da função", variant: "destructive" });

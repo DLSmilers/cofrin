@@ -144,7 +144,7 @@ const Dashboard = () => {
           }
         } else {
           // Log para admins
-          console.log("👑 Admin detectado - acesso ilimitado concedido");
+          
           toast({
             title: "Acesso Administrativo",
             description: "Bem-vindo, administrador! Você tem acesso ilimitado.",
@@ -160,18 +160,12 @@ const Dashboard = () => {
         });
 
         // Buscar transações do usuário usando função que bypassa RLS
-        console.log("🔍🔍🔍 BUSCANDO TRANSAÇÕES PARA:", userInfo.user_whatsapp);
+        
         
         // Usar função get_dashboard_data que já existe e bypassa RLS
         const { data: dashboardData, error: transactionsError } = await supabase
           .rpc('get_dashboard_data', { token_input: dashboard_token });
         
-         console.log("✅✅✅ RESULTADO DA BUSCA v2.0:", { 
-           data: dashboardData, 
-           error: transactionsError,
-           user_whatsapp: userInfo.user_whatsapp,
-           dataLength: dashboardData?.length || 0
-         });
 
         if (transactionsError) {
           console.error("❌❌❌ ERRO SUPABASE:", transactionsError);
@@ -198,8 +192,6 @@ const Dashboard = () => {
             }));
           
            setTransactions(mappedTransactions);
-           console.log("🎯🎯🎯 TRANSAÇÕES MAPEADAS v2.0:", mappedTransactions);
-           console.log("💾 Salvando no estado:", mappedTransactions.length, "transações");
           if (!mappedTransactions || mappedTransactions.length === 0) {
             toast({
               title: "🎉 Dashboard carregado com sucesso!",
@@ -252,7 +244,7 @@ const Dashboard = () => {
   }, [dashboard_token]);
 
   const fetchMetaForCurrentPeriod = async () => {
-    console.log("🚀 Função fetchMetaForCurrentPeriod INICIADA");
+    
     if (!user) {
       console.log("❌ User não existe, saindo da função");
       return;
@@ -269,13 +261,6 @@ const Dashboard = () => {
     }
 
     try {
-      console.log("🔍 Debug - Buscando meta:", {
-        user_whatsapp: user.user_whatsapp,
-        targetMonth,
-        timeFilter,
-        selectedMonth: selectedMonth?.toISOString(),
-        selectedMonthFormatted: selectedMonth ? selectedMonth.toISOString().slice(0, 7) : 'N/A'
-      });
 
       const metaResponse = await fetch(
         `https://rliefaciadhxjjynuyod.supabase.co/rest/v1/metas?user_whatsapp=eq.${user.user_whatsapp}&mes_ano=eq.${targetMonth}`,
@@ -288,25 +273,19 @@ const Dashboard = () => {
         }
       );
       
-      console.log("📡 URL completa:", `https://rliefaciadhxjjynuyod.supabase.co/rest/v1/metas?user_whatsapp=eq.${user.user_whatsapp}&mes_ano=eq.${targetMonth}`);
+      
       
       if (metaResponse.ok) {
         const metaData = await metaResponse.json();
-        console.log("📊 Resposta da meta:", {
-          found: metaData?.length > 0,
-          data: metaData,
-          targetMonth,
-          searchQuery: `user_whatsapp=eq.${user.user_whatsapp}&mes_ano=eq.${targetMonth}`
-        });
         
         if (metaData && metaData.length > 0) {
           setMeta(metaData[0]);
         } else {
-          console.log("❌ Nenhuma meta encontrada para:", targetMonth);
+          
           setMeta(null);
         }
       } else {
-        console.log("❌ Erro na resposta:", metaResponse.status, metaResponse.statusText);
+        
       }
     } catch (error) {
       console.error("Erro ao buscar meta:", error);
@@ -315,7 +294,7 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    console.log("🔄 useEffect meta disparado:", { timeFilter, selectedMonth: selectedMonth?.toISOString(), user: !!user });
+    
     fetchMetaForCurrentPeriod();
   }, [timeFilter, selectedMonth, user]);
 
@@ -324,11 +303,6 @@ const Dashboard = () => {
   }, [transactions, timeFilter, customDateRange, selectedMonth]);
 
   const filterTransactionsByTime = () => {
-    console.log("🔍 Filtrando transações v2.0:", { 
-      totalTransactions: transactions.length, 
-      timeFilter, 
-      selectedMonth: selectedMonth?.toISOString() 
-    });
     
     // Se não há transações, não faz nada
     if (transactions.length === 0) {
@@ -377,21 +351,21 @@ const Dashboard = () => {
           startDate = customDateRange.start;
           endDate = new Date(customDateRange.end.getTime() + 24 * 60 * 60 * 1000);
         } else {
-          console.log("✅ Sem filtro customizado, mantendo todas as transações");
+          
           setFilteredTransactions(transactions);
           return;
         }
          break;
        default:
          // Por padrão, mostrar TODAS as transações sem qualquer filtro
-         console.log("✅ Filtro padrão v2.0, mantendo TODAS as transações");
+         
          setFilteredTransactions(transactions);
          return;
      }
 
      // PROTEÇÃO: Se não há período definido adequadamente, mostrar todas as transações
      if (!startDate) {
-       console.log("⚠️ StartDate indefinido, mantendo todas as transações");
+       
        setFilteredTransactions(transactions);
        return;
      }
@@ -419,26 +393,11 @@ const Dashboard = () => {
       const inRange = transactionDate >= startDate && transactionDate <= endDate;
       
       if (!inRange) {
-        console.log("🗓️ Transação fora do período:", {
-          id: transaction.id,
-          date: dateStr,
-          parsed: transactionDate.toISOString(),
-          startDate: startDate.toISOString(),
-          endDate: endDate.toISOString()
-        });
       }
       
       return inRange;
     });
 
-    console.log("✅ Transações filtradas:", {
-      original: transactions.length,
-      filtered: filtered.length,
-      effectiveFilter,
-      timeFilter,
-      startDate: startDate?.toISOString(),
-      endDate: endDate?.toISOString()
-    });
 
     setFilteredTransactions(filtered);
   };
@@ -570,7 +529,7 @@ const Dashboard = () => {
                       quando: item.quando,
                     }));
                     setTransactions(mappedTransactions);
-                    console.log("🔄 Transações refrescadas:", mappedTransactions.length);
+                    
                   }
                 } catch (error) {
                   console.error("Erro ao refrescar transações:", error);

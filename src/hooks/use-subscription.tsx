@@ -35,7 +35,7 @@ export const useSubscription = () => {
         return;
       }
 
-      console.log("🔍 Verificando assinatura para usuário:", session.user.id);
+      
 
       // Check subscription status via edge function
       const { data: subscriptionData, error: subscriptionError } = await supabase.functions.invoke("check-subscription");
@@ -51,7 +51,7 @@ export const useSubscription = () => {
         return;
       }
 
-      console.log("💳 Dados da assinatura:", subscriptionData);
+      
 
       // Check trial status from profiles table
       const { data: profileData, error: profileError } = await supabase
@@ -60,7 +60,7 @@ export const useSubscription = () => {
         .eq('user_id', session.user.id)
         .single();
 
-      console.log("👤 Dados do perfil:", profileData);
+      
 
       if (profileError) {
         console.error("Erro ao buscar perfil:", profileError);
@@ -70,7 +70,7 @@ export const useSubscription = () => {
       const { data: trialExpiredRpc, error: rpcError } = await supabase
         .rpc('check_trial_expired', { user_uuid: session.user.id });
 
-      console.log("🕐 RPC trial expirado:", trialExpiredRpc, "erro:", rpcError);
+      
 
       let isTrialActive = false;
       
@@ -78,11 +78,11 @@ export const useSubscription = () => {
         const trialEndDate = new Date(profileData.trial_end_date);
         const now = new Date();
         isTrialActive = trialEndDate > now;
-        console.log("📅 Trial end date:", trialEndDate, "Agora:", now, "Trial ativo:", isTrialActive);
+        
       } else {
         // Usar RPC como fallback
         isTrialActive = typeof trialExpiredRpc === 'boolean' ? !trialExpiredRpc : false;
-        console.log("🔄 Usando fallback RPC - Trial ativo:", isTrialActive);
+        
       }
 
       const finalStatus = {
@@ -93,7 +93,7 @@ export const useSubscription = () => {
         isLoading: false,
       };
 
-      console.log("✅ Status final:", finalStatus);
+      
 
       setStatus(finalStatus);
 

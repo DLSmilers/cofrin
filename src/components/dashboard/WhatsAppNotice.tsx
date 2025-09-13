@@ -34,7 +34,7 @@ export const WhatsAppNotice = () => {
         success = true;
         break;
       } catch (error) {
-        console.log('Tentativa falhou:', error);
+        
         continue;
       }
     }
