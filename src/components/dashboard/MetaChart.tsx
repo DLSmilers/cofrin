@@ -1,8 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from "recharts";
-import { Target, TrendingUp, TrendingDown } from "lucide-react";
+import { Target, TrendingUp, TrendingDown, Calendar, CalendarDays } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 interface Meta {
   id: number;
@@ -18,6 +20,8 @@ interface MetaChartProps {
 }
 
 export const MetaChart = ({ meta }: MetaChartProps) => {
+  const [viewType, setViewType] = useState<'mensal' | 'semanal'>('mensal');
+  
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("pt-BR", {
       style: "currency",
@@ -25,14 +29,42 @@ export const MetaChart = ({ meta }: MetaChartProps) => {
     }).format(value);
   };
 
+  // Calcular meta semanal baseada na meta mensal (aproximadamente 4.33 semanas por mês)
+  const metaSemanal = meta ? meta.meta_mensal / 4.33 : 0;
+  
+  // Para gasto semanal, vamos usar uma aproximação baseada no gasto total do mês
+  const gastoSemanal = meta ? meta.gasto_total / 4.33 : 0;
+
   if (!meta) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Target className="h-5 w-5" />
-            Meta Mensal
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <Target className="h-5 w-5" />
+              {viewType === 'mensal' ? 'Meta Mensal' : 'Meta Semanal'}
+            </CardTitle>
+            <div className="flex gap-2">
+              <Button
+                variant={viewType === 'mensal' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setViewType('mensal')}
+                className="h-8"
+              >
+                <Calendar className="h-4 w-4 mr-1" />
+                Mensal
+              </Button>
+              <Button
+                variant={viewType === 'semanal' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setViewType('semanal')}
+                className="h-8"
+              >
+                <CalendarDays className="h-4 w-4 mr-1" />
+                Semanal
+              </Button>
+            </div>
+          </div>
         </CardHeader>
         <CardContent className="overflow-hidden p-3 sm:p-6">
           <div className="h-[200px] sm:h-[250px] flex items-center justify-center">
@@ -47,16 +79,20 @@ export const MetaChart = ({ meta }: MetaChartProps) => {
     );
   }
 
-  const progressPercentage = Math.min((meta.gasto_total / meta.meta_mensal) * 100, 100);
-  const remaining = meta.meta_mensal - meta.gasto_total;
-  const isOverBudget = meta.gasto_total > meta.meta_mensal;
-  const excess = isOverBudget ? meta.gasto_total - meta.meta_mensal : 0;
+  // Valores dinâmicos baseados no tipo de visualização
+  const currentMeta = viewType === 'mensal' ? meta.meta_mensal : metaSemanal;
+  const currentGasto = viewType === 'mensal' ? meta.gasto_total : gastoSemanal;
+  
+  const progressPercentage = Math.min((currentGasto / currentMeta) * 100, 100);
+  const remaining = currentMeta - currentGasto;
+  const isOverBudget = currentGasto > currentMeta;
+  const excess = isOverBudget ? currentGasto - currentMeta : 0;
 
   const chartData = [
     {
       name: "Progresso",
-      gasto: meta.gasto_total,
-      meta: meta.meta_mensal,
+      gasto: currentGasto,
+      meta: currentMeta,
       remaining: Math.max(0, remaining),
     }
   ];
@@ -75,22 +111,47 @@ export const MetaChart = ({ meta }: MetaChartProps) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Target className="h-5 w-5" />
-          Meta Mensal - {meta.mes_ano}
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <Target className="h-5 w-5" />
+            {viewType === 'mensal' ? 'Meta Mensal' : 'Meta Semanal'} - {meta.mes_ano}
+          </CardTitle>
+          <div className="flex gap-2">
+            <Button
+              variant={viewType === 'mensal' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setViewType('mensal')}
+              className="h-8"
+            >
+              <Calendar className="h-4 w-4 mr-1" />
+              Mensal
+            </Button>
+            <Button
+              variant={viewType === 'semanal' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setViewType('semanal')}
+              className="h-8"
+            >
+              <CalendarDays className="h-4 w-4 mr-1" />
+              Semanal
+            </Button>
+          </div>
+        </div>
       </CardHeader>
       <CardContent className="overflow-hidden p-3 sm:p-6">
         <div className="space-y-4">
           {/* Estatísticas */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Meta</p>
-              <p className="text-lg font-semibold">{formatCurrency(meta.meta_mensal)}</p>
+              <p className="text-sm text-muted-foreground">Meta {viewType === 'mensal' ? 'Mensal' : 'Semanal'}</p>
+              <p className="text-lg font-semibold">{formatCurrency(currentMeta)}</p>
             </div>
             <div className="space-y-1">
               <p className="text-sm text-muted-foreground">Gasto Atual</p>
-              <p className="text-lg font-semibold">{formatCurrency(meta.gasto_total)}</p>
+              <p className="text-lg font-semibold">{formatCurrency(currentGasto)}</p>
+              {viewType === 'semanal' && (
+                <p className="text-xs text-muted-foreground">Estimativa baseada no mês</p>
+              )}
             </div>
           </div>
 
