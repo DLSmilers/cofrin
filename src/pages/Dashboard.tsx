@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAdmin } from "@/hooks/use-admin";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
@@ -49,6 +50,7 @@ export type TimeFilterType = "day" | "week" | "month" | "custom" | "specific-mon
 const Dashboard = () => {
   const { dashboard_token } = useParams<{ dashboard_token: string }>();
   const navigate = useNavigate();
+  const { isAdmin } = useAdmin();
   const [user, setUser] = useState<User | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [meta, setMeta] = useState<Meta | null>(null);
@@ -362,7 +364,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
       <div className="container scrollable mx-auto p-3 sm:p-6 space-y-4 sm:space-y-6 max-w-full">
-        <DashboardHeader userName={user.nome} />
+        <DashboardHeader userName={user.nome} isAdmin={isAdmin} />
         
         <SubscriptionStatus />
         
