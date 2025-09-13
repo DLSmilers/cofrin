@@ -1,4 +1,3 @@
-import React from "react";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,9 +10,10 @@ import { ExpenseChart } from "@/components/dashboard/ExpenseChart";
 import { CategoryChart } from "@/components/dashboard/CategoryChart";
 import { TransactionsList } from "@/components/dashboard/TransactionsList";
 import { ParceledPaymentsList } from "@/components/dashboard/ParceledPaymentsList";
+import { WeeklyGoalsList } from "@/components/dashboard/WeeklyGoalsList";
+import { WeeklyGoalDialog } from "@/components/dashboard/WeeklyGoalDialog";
 import { AddTransactionDialog } from "@/components/dashboard/AddTransactionDialog";
-import { MetaChartWithFilter } from "@/components/dashboard/MetaChartWithFilter";
-import { GoalTypeFilter } from "@/components/dashboard/GoalTypeFilter";
+import { MetaChart } from "@/components/dashboard/MetaChart";
 import { ExportButton } from "@/components/dashboard/ExportButton";
 import { TimeFilter } from "@/components/dashboard/TimeFilter";
 import { SubscriptionStatus } from "@/components/dashboard/SubscriptionStatus";
@@ -44,39 +44,14 @@ interface Meta {
   user_whatsapp: string;
   meta_mensal: number;
   gasto_total: number;
-  mes_ano?: string;
-  semana_ano?: string;
-  tipo_meta?: "mensal" | "semanal";
+  mes_ano: string;
   created_at: string;
 }
 
 export type TimeFilterType = "day" | "week" | "month" | "custom" | "specific-month";
 
 const Dashboard = () => {
-  // Add error boundary for useParams
-  let dashboard_token: string | undefined;
-  try {
-    const params = useParams<{ dashboard_token: string }>();
-    dashboard_token = params.dashboard_token;
-  } catch (error) {
-    console.error("Error accessing useParams:", error);
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle className="text-center text-destructive">
-              Erro de Navegação
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-center text-muted-foreground">
-              Erro ao acessar parâmetros de navegação. Recarregue a página.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  const { dashboard_token } = useParams<{ dashboard_token: string }>();
   const navigate = useNavigate();
   const { isAdmin } = useAdmin();
   const [user, setUser] = useState<User | null>(null);
@@ -87,7 +62,6 @@ const Dashboard = () => {
   const [timeFilter, setTimeFilter] = useState<TimeFilterType>("month");
   const [customDateRange, setCustomDateRange] = useState<{start?: Date; end?: Date}>({});
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
-  const [goalView, setGoalView] = useState<"mensal" | "semanal">("mensal");
 
   useEffect(() => {
     if (!dashboard_token) {
@@ -416,38 +390,6 @@ const Dashboard = () => {
       <div className="container scrollable mx-auto p-3 sm:p-6 space-y-4 sm:space-y-6 max-w-full">
         <DashboardHeader userName={user.nome} isAdmin={isAdmin} />
         
-        {/* Mensagem sobre o bot */}
-        <Card className="border-2 border-primary bg-primary/5">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="rounded-full bg-primary/10 p-2">
-                <svg 
-                  className="h-5 w-5 text-primary" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                >
-                  <path 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    strokeWidth={2} 
-                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" 
-                  />
-                </svg>
-              </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-primary mb-1">
-                  📱 Adicione o Bot do WhatsApp
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  Para começar a registrar suas transações, adicione o número do bot: 
-                  <span className="font-bold text-foreground ml-1">(71) 9 8299-8471</span>
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
         <SubscriptionStatus />
         
         <TimeFilter
@@ -475,16 +417,18 @@ const Dashboard = () => {
             <CategoryChart transactions={filteredTransactions} />
           </div>
         </div>
-        {/* Filtro de Tipo de Meta (sempre visível) */}
-        <GoalTypeFilter selectedType={goalView} onTypeChange={setGoalView} />
 
-        {/* Meta Chart com filtro controlado */}
-        <MetaChartWithFilter 
-          meta={meta} 
-          userWhatsapp={user.user_whatsapp}
-          externalViewType={goalView}
-          onViewTypeChange={setGoalView}
-        />
+        {/* Meta Chart */}
+        <MetaChart meta={meta} />
+
+        {/* Metas Semanais */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold">Metas Semanais</h2>
+            <WeeklyGoalDialog onGoalCreated={() => window.location.reload()} />
+          </div>
+          <WeeklyGoalsList />
+        </div>
 
         {/* Pagamentos Parcelados */}
         <ParceledPaymentsList userWhatsapp={user.user_whatsapp} />
