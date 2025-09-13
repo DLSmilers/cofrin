@@ -66,7 +66,7 @@ export const CancelSubscriptionButton = () => {
       className="flex items-center gap-2"
     >
       <X className="h-4 w-4" />
-      {isLoading ? "Cancelando..." : "Cancelar Assinatura (Teste)"}
+      {isLoading ? "Cancelando..." : "Cancelar Assinatura"}
     </Button>
   );
 };
