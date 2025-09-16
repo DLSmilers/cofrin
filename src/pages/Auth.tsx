@@ -14,6 +14,8 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isResetMode, setIsResetMode] = useState(false);
+  const [showResendConfirmation, setShowResendConfirmation] = useState(false);
 
   useEffect(() => {
     // Check if user is already logged in
@@ -80,6 +82,94 @@ const Auth = () => {
     }
   };
 
+  const handlePasswordReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email) {
+      toast({
+        title: "Erro",
+        description: "Digite seu email para redefinir a senha",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setLoading(true);
+    
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth`
+      });
+
+      if (error) {
+        toast({
+          title: "Erro",
+          description: error.message,
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Email enviado!",
+          description: "Verifique seu email para redefinir sua senha"
+        });
+        setIsResetMode(false);
+      }
+    } catch (err) {
+      toast({
+        title: "Erro inesperado",
+        description: "Ocorreu um erro inesperado. Tente novamente.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendConfirmation = async () => {
+    if (!email) {
+      toast({
+        title: "Erro",
+        description: "Digite seu email para reenviar a confirmação",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setLoading(true);
+    
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`
+        }
+      });
+
+      if (error) {
+        toast({
+          title: "Erro",
+          description: error.message,
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Email reenviado!",
+          description: "Verifique seu email para confirmar sua conta"
+        });
+        setShowResendConfirmation(false);
+      }
+    } catch (err) {
+      toast({
+        title: "Erro inesperado",
+        description: "Ocorreu um erro inesperado. Tente novamente.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-accent/20 flex items-center justify-center py-8">
       <div className="container mx-auto px-4">
@@ -102,13 +192,18 @@ const Auth = () => {
           {/* Login Form */}
           <Card className="border-border/50">
             <CardHeader>
-              <CardTitle className="text-2xl text-center">Fazer Login</CardTitle>
+              <CardTitle className="text-2xl text-center">
+                {isResetMode ? "Redefinir Senha" : "Fazer Login"}
+              </CardTitle>
               <CardDescription className="text-center">
-                Digite suas credenciais para acessar sua conta
+                {isResetMode 
+                  ? "Digite seu email para receber o link de redefinição"
+                  : "Digite suas credenciais para acessar sua conta"
+                }
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSignIn} className="space-y-4">
+              <form onSubmit={isResetMode ? handlePasswordReset : handleSignIn} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
@@ -121,39 +216,108 @@ const Auth = () => {
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="password">Senha</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Sua senha"
-                    required
-                  />
-                </div>
+                {!isResetMode && (
+                  <div className="space-y-2">
+                    <Label htmlFor="password">Senha</Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Sua senha"
+                      required
+                    />
+                  </div>
+                )}
 
                 <Button 
                   type="submit" 
                   className="w-full bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground py-3 text-lg font-semibold"
                   disabled={loading}
                 >
-                  {loading ? "Entrando..." : "Entrar"}
+                  {loading 
+                    ? (isResetMode ? "Enviando..." : "Entrando...") 
+                    : (isResetMode ? "Enviar Link" : "Entrar")
+                  }
                 </Button>
 
-                {/* Sign Up Link */}
-                <div className="text-center pt-4">
-                  <p className="text-muted-foreground">
-                    Não tem uma conta?{" "}
-                    <Button
-                      variant="link"
-                      className="p-0 h-auto text-primary"
-                      onClick={() => navigate("/signup")}
-                    >
-                      Criar conta gratuita
-                    </Button>
-                  </p>
+                {/* Action Links */}
+                <div className="space-y-3 pt-4">
+                  {!isResetMode && (
+                    <div className="flex justify-between text-sm">
+                      <Button
+                        variant="link"
+                        className="p-0 h-auto text-primary"
+                        onClick={() => setIsResetMode(true)}
+                        type="button"
+                      >
+                        Esqueceu a senha?
+                      </Button>
+                      <Button
+                        variant="link"
+                        className="p-0 h-auto text-primary"
+                        onClick={() => setShowResendConfirmation(true)}
+                        type="button"
+                      >
+                        Reenviar confirmação
+                      </Button>
+                    </div>
+                  )}
+
+                  {isResetMode && (
+                    <div className="text-center">
+                      <Button
+                        variant="link"
+                        className="p-0 h-auto text-primary"
+                        onClick={() => setIsResetMode(false)}
+                        type="button"
+                      >
+                        Voltar ao login
+                      </Button>
+                    </div>
+                  )}
+
+                  {showResendConfirmation && (
+                    <div className="bg-muted/50 p-4 rounded-lg space-y-3">
+                      <p className="text-sm text-muted-foreground">
+                        Não recebeu o email de confirmação?
+                      </p>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleResendConfirmation}
+                          disabled={loading}
+                        >
+                          {loading ? "Enviando..." : "Reenviar"}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setShowResendConfirmation(false)}
+                        >
+                          Cancelar
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </div>
+
+                {/* Sign Up Link */}
+                {!isResetMode && !showResendConfirmation && (
+                  <div className="text-center pt-4 border-t border-border/50">
+                    <p className="text-muted-foreground">
+                      Não tem uma conta?{" "}
+                      <Button
+                        variant="link"
+                        className="p-0 h-auto text-primary"
+                        onClick={() => navigate("/signup")}
+                      >
+                        Criar conta gratuita
+                      </Button>
+                    </p>
+                  </div>
+                )}
               </form>
             </CardContent>
           </Card>
