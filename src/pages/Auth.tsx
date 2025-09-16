@@ -32,15 +32,17 @@ const Auth = () => {
       return;
     }
 
-    // Check if user is already logged in
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        navigate("/");
-      }
-    };
-    checkAuth();
-  }, [navigate, searchParams]);
+    // Only check auth if not in password update mode
+    if (!isPasswordUpdateMode) {
+      const checkAuth = async () => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          navigate("/");
+        }
+      };
+      checkAuth();
+    }
+  }, [navigate, searchParams, isPasswordUpdateMode]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
