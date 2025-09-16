@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,13 +11,27 @@ import { PiggyBank } from "lucide-react";
 const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isResetMode, setIsResetMode] = useState(false);
+  const [isPasswordUpdateMode, setIsPasswordUpdateMode] = useState(false);
   const [showResendConfirmation, setShowResendConfirmation] = useState(false);
 
   useEffect(() => {
+    // Check for password reset token in URL
+    const accessToken = searchParams.get('access_token');
+    const refreshToken = searchParams.get('refresh_token');
+    const type = searchParams.get('type');
+
+    if (accessToken && refreshToken && type === 'recovery') {
+      setIsPasswordUpdateMode(true);
+      return;
+    }
+
     // Check if user is already logged in
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -26,7 +40,7 @@ const Auth = () => {
       }
     };
     checkAuth();
-  }, [navigate]);
+  }, [navigate, searchParams]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -125,6 +139,67 @@ const Auth = () => {
     }
   };
 
+  const handlePasswordUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!newPassword || !confirmPassword) {
+      toast({
+        title: "Erro",
+        description: "Preencha ambos os campos de senha",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      toast({
+        title: "Erro",
+        description: "As senhas não coincidem",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast({
+        title: "Erro",
+        description: "A senha deve ter pelo menos 6 caracteres",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setLoading(true);
+    
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+
+      if (error) {
+        toast({
+          title: "Erro",
+          description: error.message,
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Senha atualizada!",
+          description: "Sua senha foi alterada com sucesso"
+        });
+        navigate("/");
+      }
+    } catch (err) {
+      toast({
+        title: "Erro inesperado",
+        description: "Ocorreu um erro inesperado. Tente novamente.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleResendConfirmation = async () => {
     if (!email) {
       toast({
@@ -193,132 +268,170 @@ const Auth = () => {
           <Card className="border-border/50">
             <CardHeader>
               <CardTitle className="text-2xl text-center">
-                {isResetMode ? "Redefinir Senha" : "Fazer Login"}
+                {isPasswordUpdateMode ? "Nova Senha" : isResetMode ? "Redefinir Senha" : "Fazer Login"}
               </CardTitle>
               <CardDescription className="text-center">
-                {isResetMode 
+                {isPasswordUpdateMode 
+                  ? "Digite sua nova senha"
+                  : isResetMode 
                   ? "Digite seu email para receber o link de redefinição"
                   : "Digite suas credenciais para acessar sua conta"
                 }
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={isResetMode ? handlePasswordReset : handleSignIn} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="seu@email.com"
-                    required
-                  />
-                </div>
-
-                {!isResetMode && (
+              {isPasswordUpdateMode ? (
+                <form onSubmit={handlePasswordUpdate} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="password">Senha</Label>
+                    <Label htmlFor="newPassword">Nova Senha</Label>
                     <Input
-                      id="password"
+                      id="newPassword"
                       type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Sua senha"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="Digite sua nova senha"
                       required
                     />
                   </div>
-                )}
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="confirmPassword">Confirmar Nova Senha</Label>
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Confirme sua nova senha"
+                      required
+                    />
+                  </div>
 
-                <Button 
-                  type="submit" 
-                  className="w-full bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground py-3 text-lg font-semibold"
-                  disabled={loading}
-                >
-                  {loading 
-                    ? (isResetMode ? "Enviando..." : "Entrando...") 
-                    : (isResetMode ? "Enviar Link" : "Entrar")
-                  }
-                </Button>
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground py-3 text-lg font-semibold"
+                    disabled={loading}
+                  >
+                    {loading ? "Atualizando..." : "Atualizar Senha"}
+                  </Button>
+                </form>
+              ) : (
+                <form onSubmit={isResetMode ? handlePasswordReset : handleSignIn} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="seu@email.com"
+                      required
+                    />
+                  </div>
 
-                {/* Action Links */}
-                <div className="space-y-3 pt-4">
                   {!isResetMode && (
-                    <div className="flex justify-between text-sm">
-                      <Button
-                        variant="link"
-                        className="p-0 h-auto text-primary"
-                        onClick={() => setIsResetMode(true)}
-                        type="button"
-                      >
-                        Esqueceu a senha?
-                      </Button>
-                      <Button
-                        variant="link"
-                        className="p-0 h-auto text-primary"
-                        onClick={() => setShowResendConfirmation(true)}
-                        type="button"
-                      >
-                        Reenviar confirmação
-                      </Button>
+                    <div className="space-y-2">
+                      <Label htmlFor="password">Senha</Label>
+                      <Input
+                        id="password"
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Sua senha"
+                        required
+                      />
                     </div>
                   )}
 
-                  {isResetMode && (
-                    <div className="text-center">
-                      <Button
-                        variant="link"
-                        className="p-0 h-auto text-primary"
-                        onClick={() => setIsResetMode(false)}
-                        type="button"
-                      >
-                        Voltar ao login
-                      </Button>
-                    </div>
-                  )}
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground py-3 text-lg font-semibold"
+                    disabled={loading}
+                  >
+                    {loading 
+                      ? (isResetMode ? "Enviando..." : "Entrando...") 
+                      : (isResetMode ? "Enviar Link" : "Entrar")
+                    }
+                  </Button>
 
-                  {showResendConfirmation && (
-                    <div className="bg-muted/50 p-4 rounded-lg space-y-3">
-                      <p className="text-sm text-muted-foreground">
-                        Não recebeu o email de confirmação?
-                      </p>
-                      <div className="flex gap-2">
+                  {/* Action Links */}
+                  <div className="space-y-3 pt-4">
+                    {!isResetMode && (
+                      <div className="flex justify-between text-sm">
                         <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={handleResendConfirmation}
-                          disabled={loading}
+                          variant="link"
+                          className="p-0 h-auto text-primary"
+                          onClick={() => setIsResetMode(true)}
+                          type="button"
                         >
-                          {loading ? "Enviando..." : "Reenviar"}
+                          Esqueceu a senha?
                         </Button>
                         <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setShowResendConfirmation(false)}
+                          variant="link"
+                          className="p-0 h-auto text-primary"
+                          onClick={() => setShowResendConfirmation(true)}
+                          type="button"
                         >
-                          Cancelar
+                          Reenviar confirmação
                         </Button>
                       </div>
+                    )}
+
+                    {isResetMode && (
+                      <div className="text-center">
+                        <Button
+                          variant="link"
+                          className="p-0 h-auto text-primary"
+                          onClick={() => setIsResetMode(false)}
+                          type="button"
+                        >
+                          Voltar ao login
+                        </Button>
+                      </div>
+                    )}
+
+                    {showResendConfirmation && (
+                      <div className="bg-muted/50 p-4 rounded-lg space-y-3">
+                        <p className="text-sm text-muted-foreground">
+                          Não recebeu o email de confirmação?
+                        </p>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleResendConfirmation}
+                            disabled={loading}
+                          >
+                            {loading ? "Enviando..." : "Reenviar"}
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setShowResendConfirmation(false)}
+                          >
+                            Cancelar
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Sign Up Link */}
+                  {!isResetMode && !showResendConfirmation && (
+                    <div className="text-center pt-4 border-t border-border/50">
+                      <p className="text-muted-foreground">
+                        Não tem uma conta?{" "}
+                        <Button
+                          variant="link"
+                          className="p-0 h-auto text-primary"
+                          onClick={() => navigate("/signup")}
+                        >
+                          Criar conta gratuita
+                        </Button>
+                      </p>
                     </div>
                   )}
-                </div>
-
-                {/* Sign Up Link */}
-                {!isResetMode && !showResendConfirmation && (
-                  <div className="text-center pt-4 border-t border-border/50">
-                    <p className="text-muted-foreground">
-                      Não tem uma conta?{" "}
-                      <Button
-                        variant="link"
-                        className="p-0 h-auto text-primary"
-                        onClick={() => navigate("/signup")}
-                      >
-                        Criar conta gratuita
-                      </Button>
-                    </p>
-                  </div>
-                )}
-              </form>
+                </form>
+              )}
             </CardContent>
           </Card>
 
